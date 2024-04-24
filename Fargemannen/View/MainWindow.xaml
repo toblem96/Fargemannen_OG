@@ -1,0 +1,23 @@
+﻿<Window x:Class="Fargemannen.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Fargemannen.View"
+        xmlns:vm="clr-namespace:Fargemannen.ViewModel"
+        
+        Title="Fargemannen" Height="450" Width="800">
+
+    <Grid>
+        
+        <TabControl>
+            <TabItem Header="FilOpplasting">
+                <local:FileUpload />
+            </TabItem>
+            <TabItem Header="Symboler">
+                <local:Symbols />
+            </TabItem>
+            <TabItem Header="AnalyseXY">
+                <local:AnalyseXY />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PdfiumViewer.Native.x86_64.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86_64.v8-xfa.props" Condition="Exists('..\packages\PdfiumViewer.Native.x86_64.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86_64.v8-xfa.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{44FEDFCC-A013-44E8-B563-E4E8126A8A6E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Fargemannen</RootNamespace>
+    <AssemblyName>Fargemannen</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>mainfest.addin</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AcCoreMgd">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcCoreMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="AcCui">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcCui.dll</HintPath>
+    </Reference>
+    <Reference Include="AcDbMgd">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcDbMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="acdbmgdbrep">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\acdbmgdbrep.dll</HintPath>
+    </Reference>
+    <Reference Include="AcDx">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcDx.dll</HintPath>
+    </Reference>
+    <Reference Include="AcMgd">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="AcMr">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcMr.dll</HintPath>
+    </Reference>
+    <Reference Include="AcSeamless">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcSeamless.dll</HintPath>
+    </Reference>
+    <Reference Include="AcTcMgd">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcTcMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="AcWindows">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AcWindows.dll</HintPath>
+    </Reference>
+    <Reference Include="AdUIMgd">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AdUIMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="AdUiPalettes">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AdUiPalettes.dll</HintPath>
+    </Reference>
+    <Reference Include="AdWindows">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc\AdWindows.dll</HintPath>
+    </Reference>
+    <Reference Include="AecBaseMgd, Version=8.6.52.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Civil3D.NET.13.6.1781\lib\net47\AecBaseMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AeccDataShortcutMgd, Version=13.6.1781.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Civil3D.NET.13.6.1781\lib\net47\AeccDataShortcutMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AeccDbMgd, Version=13.6.1781.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Civil3D.NET.13.6.1781\lib\net47\AeccDbMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AeccPressurePipesMgd, Version=13.6.1781.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Civil3D.NET.13.6.1781\lib\net47\AeccPressurePipesMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AecPropDataMgd, Version=8.6.52.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Civil3D.NET.13.6.1781\lib\net47\AecPropDataMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autodesk.AutoCAD.Interop">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc-x64\Autodesk.AutoCAD.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Autodesk.AutoCAD.Interop.Common">
+      <HintPath>..\..\..\..\..\Autodesk\ObjectARX_for_AutoCAD_2024_Win_64bit_dlm\inc-x64\Autodesk.AutoCAD.Interop.Common.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.95.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.95.1\lib\net46\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.3.0.2\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.0.2\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.10.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.22.0.997, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.22.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Http, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Http.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenAI_API, Version=1.11.0.0, Culture=neutral, PublicKeyToken=1b0a4c0430762146, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenAI.1.11.0\lib\netstandard2.0\OpenAI_API.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.1.68.0\lib\net45\SkiaSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.4.5.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Analyse.cs" />
+    <Compile Include="AnalyseZ.cs" />
+    <Compile Include="ApplicationInsights\AppInsights.cs" />
+    <Compile Include="DataHenter.xaml.cs">
+      <DependentUpon>DataHenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DukPåMesh.cs" />
+    <Compile Include="EXsjekk.cs" />
+    <Compile Include="GenRapport.xaml.cs">
+      <DependentUpon>GenRapport.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Intervall.cs" />
+    <Compile Include="Legend.cs" />
+    <Compile Include="MakeringAvBerg.cs" />
+    <Compile Include="Model\AnalyseXYModel.cs" />
+    <Compile Include="Model\SymbolHandlers.cs" />
+    <Compile Include="Model\SymbolModel.cs" />
+    <Compile Include="ProgressBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Rapport.cs" />
+    <Compile Include="SecondWinAnalyseXY.xaml.cs">
+      <DependentUpon>SecondWinAnalyseXY.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SecondWinAnalyseZ.xaml.cs">
+      <DependentUpon>SecondWinAnalyseZ.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symboler\SecondWinSymbol.xaml.cs">
+      <DependentUpon>SecondWinSymbol.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symboler\SymbolProsseser.cs" />
+    <Compile Include="Symboler\SymbolStyle.cs" />
+    <Compile Include="ViewModel\AnalyseXYViewModel.cs" />
+    <Compile Include="ViewModel\FileUploadViewModel.cs" />
+    <Compile Include="ViewModel\SymbolsViewModel.cs" />
+    <Compile Include="View\AnalyseXY.xaml.cs">
+      <DependentUpon>AnalyseXY.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FileUpload.xaml.cs">
+      <DependentUpon>FileUpload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Symbols.xaml.cs">
+      <DependentUpon>Symbols.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WinAnalyseXY.xaml.cs">
+      <DependentUpon>WinAnalyseXY.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symboler\WinSymbol.xaml.cs">
+      <DependentUpon>WinSymbol.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Kladd\X_Kladd_Civil3DPointCreator.cs" />
+    <Compile Include="WinBergModell.xaml.cs">
+      <DependentUpon>WinBergModell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Kladd\X_kLADD.cs" />
+    <Compile Include="Model\ProsseseringAvFiler.cs" />
+    <Compile Include="PunktInfo.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Kladd\X_KLADD_deleteLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="mainfest.addin" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\Totalsondering.dwg" />
+    <EmbeddedResource Include="Resources\dreiesondering.dwg" />
+    <EmbeddedResource Include="Resources\Dreietrykksondering.dwg" />
+    <EmbeddedResource Include="Resources\enkelSondering.dwg" />
+    <EmbeddedResource Include="Resources\fjellIDagen.dwg" />
+    <EmbeddedResource Include="Resources\fjellkontrollboring.dwg" />
+    <EmbeddedResource Include="Resources\poretrykksmåler.dwg" />
+    <EmbeddedResource Include="Resources\prøvegrop.dwg" />
+    <EmbeddedResource Include="Resources\prøveserie.dwg" />
+    <EmbeddedResource Include="Resources\ramsondering.dwg" />
+    <EmbeddedResource Include="Resources\stans.dwg" />
+    <EmbeddedResource Include="Resources\vingeboring.dwg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DataHenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GenRapport.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SecondWinAnalyseXY.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SecondWinAnalyseZ.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Symboler\SecondWinSymbol.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AnalyseXY.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\FileUpload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Symbols.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinAnalyseXY.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinBergModell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Symboler\WinSymbol.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Bilder\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AXDBLib">
+      <Guid>{39FFAA00-8623-488F-8C53-DD3B0B7A464F}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Syncfusion.PdfToImageConverter.WPF.25.1.38\build\net462\Syncfusion.PdfToImageConverter.WPF.targets" Condition="Exists('..\packages\Syncfusion.PdfToImageConverter.WPF.25.1.38\build\net462\Syncfusion.PdfToImageConverter.WPF.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Syncfusion.PdfToImageConverter.WPF.25.1.38\build\net462\Syncfusion.PdfToImageConverter.WPF.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Syncfusion.PdfToImageConverter.WPF.25.1.38\build\net462\Syncfusion.PdfToImageConverter.WPF.targets'))" />
+    <Error Condition="!Exists('..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets'))" />
+    <Error Condition="!Exists('..\packages\Pdfium.Net.SDK.4.89.2704\build\Pdfium.Net.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pdfium.Net.SDK.4.89.2704\build\Pdfium.Net.SDK.targets'))" />
+    <Error Condition="!Exists('..\packages\PdfiumViewer.Native.x86_64.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86_64.v8-xfa.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PdfiumViewer.Native.x86_64.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86_64.v8-xfa.props'))" />
+  </Target>
+  <Import Project="..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets')" />
+  <Import Project="..\packages\Pdfium.Net.SDK.4.89.2704\build\Pdfium.Net.SDK.targets" Condition="Exists('..\packages\Pdfium.Net.SDK.4.89.2704\build\Pdfium.Net.SDK.targets')" />
+</Project>

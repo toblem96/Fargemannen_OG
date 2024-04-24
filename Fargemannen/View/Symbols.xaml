@@ -1,0 +1,142 @@
+﻿<UserControl x:Class="Fargemannen.View.Symbols"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Fargemannen.View"
+             xmlns:vm="clr-namespace:Fargemannen.ViewModel"
+           d:DesignHeight="450" d:DesignWidth="800"
+             mc:Ignorable="d" >
+
+    <Grid  DataContext="{Binding Source={x:Static vm:SymbolsViewModel.Instance}}" Background="White">
+
+        <TabControl>
+            <TabItem Header="Generer Symbol">
+                <Grid Background="White" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="1" Grid.Row="1" FontSize="20" FontFamily="Artifakt Element Heavy" Text="Symboler"/>
+
+                    <TextBlock Grid.Column="1" Grid.Row="3" FontSize="15" FontFamily="Artifakt Element Medium" Text="Sonderingstyper:"/>
+                    <ListBox Grid.Column="1" Grid.Row="4" ItemsSource="{Binding SonderingTypes}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+
+                    <StackPanel Grid.Column="3" Grid.Row="4" Orientation="Vertical">
+                        <TextBlock Text="Minimums årsgrense:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+
+                        <TextBlock Text="Minimums bor i fjell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,10,0,10"/>
+                        <TextBox Text="{Binding MinDrillingDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,20"/>
+
+                        <TextBlock Text="Velg prosjekt:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+                        <RadioButton Content="PDF-nummer" GroupName="ProjectType" IsChecked="{Binding UsePDFProject, Mode=TwoWay}"/>
+                        <RadioButton Content="Saksnummer" GroupName="ProjectType" IsChecked="{Binding UseCaseProject, Mode=TwoWay}"/>
+                        <RadioButton Content="Egendefinert:" GroupName="ProjectType" IsChecked="{Binding UseCustomProject, Mode=TwoWay}"/>
+                        <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="20,0,0,10"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4" Grid.Row="4" Orientation="Vertical">
+                        <TextBlock Text="Borenummer" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+
+                        <RadioButton Content="SOSI nummer" GroupName="NummerType" IsChecked="{Binding UseSOSINumber, Mode=TwoWay}"/>
+                        <RadioButton Content="PDF nummer" GroupName="NummerType" IsChecked="{Binding UsePDFNumber, Mode=TwoWay}"/>
+                    </StackPanel>
+
+
+
+                    <Button Grid.Column="1" Grid.Row="11" Content="Generer Symboler" Command="{Binding GenerateSymbolsCommand}"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Rediger Symbol">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Color selection for normal symbol -->
+                    <TextBlock Grid.Column="1" Grid.Row="2" FontSize="15" FontFamily="Segoe UI" Text="Farge vanlig symbol:"/>
+                    <Button Grid.Column="1" Grid.Row="3" Content="Velg farge" Command="{Binding ChooseNormalColorCommand}"/>
+                    <Rectangle Grid.Column="1" Grid.Row="4" Height="39" Width="145" Stroke="Black" Fill="{Binding NormalSymbolColorBrush}"/>
+
+                    <!-- Color selection for minimum drilling symbol -->
+                    <TextBlock Grid.Column="3" Grid.Row="2" FontSize="15" FontFamily="Segoe UI" Text="Farge liten bor symbol:"/>
+                    <Button Grid.Column="3" Grid.Row="3" Content="Velg farge" Command="{Binding minDrillingSymbolColorCommand}"/>
+                    <Rectangle Grid.Column="3" Grid.Row="4" Height="39" Width="162" Stroke="Black" Fill="{Binding minDrillingSymbolColorBrush}"/>
+
+                    <!-- Rotation slider -->
+                    <TextBlock Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Rotasjon av symbol:"/>
+                    <Slider x:Name="sliderRotasjon" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="7"
+                            Minimum="-180" Maximum="180" Value="{Binding Rotation, Mode=TwoWay}" TickFrequency="5" IsSnapToTickEnabled="True"/>
+
+                    <!-- Scale slider -->
+                    <TextBlock Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Endring av skala:"/>
+                    <Slider x:Name="sliderSkala" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" VerticalAlignment="Top" Width="300"
+                            Minimum="0" Maximum="2.5" Value="{Binding Scale, Mode=TwoWay}" TickFrequency="0.1" IsSnapToTickEnabled="True"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

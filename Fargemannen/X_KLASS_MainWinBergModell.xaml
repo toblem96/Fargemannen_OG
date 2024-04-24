@@ -1,0 +1,45 @@
+﻿<Window x:Class="Fargemannen.MainWinSymbol"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Fargemannen"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="309*"/>
+            <ColumnDefinition Width="491*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--Knapp for filfalg sosi -->
+        <Button Content="Button" HorizontalAlignment="Left" Margin="27,52,0,0" VerticalAlignment="Top" RenderTransformOrigin="-3.868,-0.686" Click="Button_VelgSosiFil" Width="58"/>
+
+        <!--Tekstsboks for å hente minÅr -->
+        <TextBox HorizontalAlignment="Left" Margin="27,130,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="TextBox_MinAr"/>
+
+        <!-- Knapp for å vise sjekkliste -->
+        <Button Content="Vis Sjekkliste" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_ShowCheckListBoringer" Margin="27,197,0,0"/>
+
+        <!-- Sjekklisten -->
+        <ListBox x:Name="lstSondering" SelectionMode="Multiple" Margin="0,455,20,-435">
+            <CheckBox Content="Enkel sondering" Tag="Enkel Sondering" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <CheckBox Content="Ikke angitt" Tag="Ikke Angitt" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <CheckBox Content="Dreietrykksondering" Tag="Dreietrykksondering" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <CheckBox Content="Dreiesondering uspesifisert" Tag="DreiesonderingUspesifisert" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <CheckBox Content="Vingeboring" Tag="Vingeboring" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <CheckBox Content="Totalsondering" Tag="Totalsondering" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            <TextBlock TextWrapping="Wrap" Name="boreMetoderInfo" Text="TextBlock"/>
+        </ListBox>
+
+        <!-- Startknapp for prossesen-->
+        <Button Content="Start Prossesering" Click="StartProcessing_Click" Grid.Column="1" Margin="0,0,182,0"/>
+        
+        <!-- Informasjon om hvilken filer som er lastet opp -->
+        <TextBlock HorizontalAlignment="Left" Margin="27,81,0,0" TextWrapping="Wrap" Name="tbInfo" Text="TextBlock" VerticalAlignment="Top"/>
+        
+        <!-- Informajon om hvilk min_ar verdier som kommer-->
+        <TextBlock HorizontalAlignment="Left" Margin="27,153,0,0" TextWrapping="Wrap" Name="minArInfo" Text="TextBlock" VerticalAlignment="Top" RenderTransformOrigin="-0.35,-0.944"/>
+
+    </Grid>
+</Window>

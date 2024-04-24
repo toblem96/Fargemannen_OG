@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>DemoApps</Name>
+		<Assembly>WpfDemo.dll</Assembly>
+		<AddInId>B0C1D6E9-5DA8-4617-8AD8-7FA48B664F3F</AddInId>
+		<FullClassName>WpfDemo.Program</FullClassName>
+		<Text>Demo</Text>
+		<Description>Trying things out</Description>
+		<VendorId>Mazri A.</VendorId>
+		<VendorDescription>Mazri A. demo's</VendorDescription>
+		<VisibilityMode>AlwaysVisible</VisibilityMode>
+	</AddIn>
+</RevitAddIns>

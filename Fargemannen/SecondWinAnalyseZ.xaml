@@ -1,0 +1,200 @@
+﻿<Window x:Class="Fargemannen.SecondWinAnalyseZ"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Fargemannen"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <!--10 -->
+            <RowDefinition Height="50" />
+            <RowDefinition Height="auto" />
+            <!--12 -->
+            <RowDefinition Height="20" />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+
+        </Grid.RowDefinitions>
+
+
+
+        <!-- INT_1-->
+        <TextBlock Grid.Column="1" Grid.Row="2" FontSize="15" FontFamily="Artifakt Element Medium">
+Intervall 1:
+        </TextBlock>
+
+        <Button Grid.Column="1" Grid.Row="3" Content="farge"  Click="FargeInt1Z"/>
+
+        <Rectangle Grid.Column="1" HorizontalAlignment="Center" Height="39" Margin="0,1,0,0" Grid.Row="4" Stroke="Black" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-2.587,-0.277" Name="colorDisplay_1"/>
+
+
+
+        <TextBlock Grid.Column="3" Grid.Row="3" FontSize="15" FontFamily="Artifakt Element Medium">
+Start-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="3" TextChanged="BoxInt1_startZ" Width="100" />
+
+        <TextBlock Grid.Column="3" Grid.Row="4" FontSize="15" FontFamily="Artifakt Element Medium">
+Slutt-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="4" TextChanged="BoxInt1_sluttZ" />
+
+        <!-- INT_2 -->
+        <TextBlock Grid.Column="1" Grid.Row="5" FontSize="15" FontFamily="Artifakt Element Medium">
+Intervall 2:
+        </TextBlock>
+
+        <Button Grid.Column="1" Grid.Row="6" Content="farge"  Click="FargeInt2Z"/>
+
+        <Rectangle Grid.Column="1" Grid.Row="7" Stroke="Black"  RenderTransformOrigin="-2.587,-0.277" Name="colorDisplay_2"/>
+
+
+
+
+        <TextBlock Grid.Column="3" Grid.Row="6" FontSize="15" FontFamily="Artifakt Element Medium">
+Start-verdi:
+        </TextBlock>
+
+        <TextBox x:Name="boxInt2StartZ" Grid.Column="4" Grid.Row="6" TextChanged="BoxInt2_startZ" />
+        
+
+        <TextBlock Grid.Column="3" Grid.Row="7" FontSize="15" FontFamily="Artifakt Element Medium">
+Slutt-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="7" TextChanged="BoxInt2_sluttZ" />
+
+
+        <!-- INT_3-->
+        <TextBlock Grid.Column="1" Grid.Row="8" FontSize="15" FontFamily="Artifakt Element Medium">
+Intervall 3:
+        </TextBlock>
+
+        <Button Grid.Column="1" Grid.Row="9" Content="farge"  Click="FargeInt3Z"/>
+
+        <Rectangle Grid.Column="1" Grid.Row="10" Stroke="Black"  RenderTransformOrigin="-2.587,-0.277" Name="colorDisplay_3" Height="20"/>
+
+
+
+        <TextBlock Grid.Column="3" Grid.Row="9" FontSize="15" FontFamily="Artifakt Element Medium">
+Start-verdi:
+        </TextBlock>
+
+        <TextBox x:Name="boxInt3StartZ" Grid.Column="4" Grid.Row="9" TextChanged="BoxInt3_startZ" />
+
+        <TextBlock Grid.Column="3" Grid.Row="10" FontSize="15" FontFamily="Artifakt Element Medium">
+Slutt-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="10" TextChanged="BoxInt3_sluttZ" />
+
+        <!-- INT_4-->
+        <TextBlock Grid.Column="1" Grid.Row="11" FontSize="15" FontFamily="Artifakt Element Medium">
+Intervall 4:
+        </TextBlock>
+
+        <Button Grid.Column="1" Grid.Row="12" Content="farge"  Click="FargeInt4Z"/>
+
+        <Rectangle Grid.Column="1" Grid.Row="13" Stroke="Black"  RenderTransformOrigin="-2.587,-0.277" Name="colorDisplay_4"/>
+
+
+
+
+
+        <TextBlock Grid.Column="3" Grid.Row="12" FontSize="15" FontFamily="Artifakt Element Medium">
+Start-verdi:
+        </TextBlock>
+
+        <TextBox  x:Name="boxInt4StartZ" Grid.Column="4" Grid.Row="12" TextChanged="BoxInt4_startZ" />
+
+        <TextBlock Grid.Column="3" Grid.Row="13" FontSize="15" FontFamily="Artifakt Element Medium">
+Slutt-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="13" TextChanged="BoxInt4_sluttZ" />
+
+        <!-- INT_5-->
+        <TextBlock Grid.Column="1" Grid.Row="14" FontSize="15" FontFamily="Artifakt Element Medium">
+Intervall 5:
+        </TextBlock>
+
+        <Button Grid.Column="1" Grid.Row="15" Content="farge"  Click="FargeInt5Z"/>
+
+        <Rectangle Grid.Column="1" Grid.Row="17" Stroke="Black"  RenderTransformOrigin="-2.587,-0.277" Name="colorDisplay_5"/>
+
+
+
+        <TextBlock  Grid.Column="3" Grid.Row="15" FontSize="15" FontFamily="Artifakt Element Medium">
+Start-verdi:
+        </TextBlock>
+
+        <TextBox  x:Name="boxInt5StartZ"  Grid.Column="4" Grid.Row="15" TextChanged="BoxInt5_startZ" />
+
+        <TextBlock Grid.Column="3" Grid.Row="16" FontSize="15" FontFamily="Artifakt Element Medium">
+Slutt-verdi:
+        </TextBlock>
+
+        <TextBox Grid.Column="4" Grid.Row="16" TextChanged="BoxInt5_sluttZ" />
+
+
+
+
+        <!-- Min Verdi-->
+        <TextBlock Grid.Column="7" Grid.Row="4" FontSize="15" FontFamily="Artifakt Element Medium">
+Min Verdi:
+        </TextBlock>
+
+        <TextBox x:Name="MinVerdiTextBox"  Grid.Column="8" Grid.Row="4" />
+
+
+        <!-- Avg Verdi-->
+        <TextBlock Grid.Column="7" Grid.Row="6" FontSize="15" FontFamily="Artifakt Element Medium">
+Gjennomsnitt Verdi:
+        </TextBlock>
+
+        <TextBox x:Name="AvgVerdiTextBox"  Grid.Column="8" Grid.Row="6" />
+
+        <!-- Min Verdi-->
+        <TextBlock Grid.Column="7" Grid.Row="8" FontSize="15" FontFamily="Artifakt Element Medium">
+Max Verdi:
+        </TextBlock>
+
+        <TextBox x:Name="MaxVerdiTextBox"  Grid.Column="8" Grid.Row="8" />
+        <Button Grid.Column="7" Content="Kjør" HorizontalAlignment="Left" Margin="10,0,0,1" Grid.Row="15" Height="20" VerticalAlignment="Bottom" Click="Button_ClickZ"/>
+
+        <Slider Grid.Column="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="23,30,0,0" Grid.Row="11" VerticalAlignment="Top" Width="120" Minimum="0" Maximum="100" Value="0" ValueChanged="Slider_ValueChangedZ"/>
+        <Button Grid.Column="7" Content="Button" HorizontalAlignment="Left" Margin="83,10,0,0" Grid.RowSpan="2" Grid.Row="17" VerticalAlignment="Top" Click="Button_Click"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,10 @@
+﻿<Window x:Class="Fargemannen.GenRapport"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Fargemannen" Height="350" Width="525">
+    <StackPanel Margin="10">
+        <TextBox x:Name="InputTextBox" Height="100" TextWrapping="Wrap" />
+        <Button Content="Generer" Click="GenerateButton_Click" />
+        <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap" />
+    </StackPanel>
+</Window>
