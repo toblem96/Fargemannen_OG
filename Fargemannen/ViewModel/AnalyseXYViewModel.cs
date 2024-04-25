@@ -553,7 +553,7 @@ namespace Fargemannen.ViewModel
                 int countInInterval = lengdeVerdier.Count(x => x >= StartVerdi && x < SluttVerdi + 0.1);
                 Prosent = (double)countInInterval / totalLengder * 100;
             }
-            AnalyseXYViewModel.Instance.RecalculateTotalPercentage();
+           // AnalyseXYViewModel.Instance.RecalculateTotalPercentage();
 
         }
     }
