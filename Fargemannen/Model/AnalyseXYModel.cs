@@ -146,7 +146,7 @@ namespace Fargemannen.Model
                     }
                 }
 
-                lengdeVerdier.Add(Math.Round(nearestDistance));
+                lengdeVerdier.Add(Math.Round(nearestDistance, 1));
             }
         }
 

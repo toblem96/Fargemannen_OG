@@ -222,7 +222,11 @@ namespace Fargemannen.ViewModel
 
 
 
-
+        public void RecalculateTotalPercentage()
+        {
+            TotalProsent = Intervaller.Sum(intervall => intervall.Prosent);
+            OnPropertyChanged(nameof(TotalProsent)); // Sørger for å oppdatere UI med den nye totalen
+        }
 
         private void FyllVerdier()
         {
@@ -549,6 +553,8 @@ namespace Fargemannen.ViewModel
                 int countInInterval = lengdeVerdier.Count(x => x >= StartVerdi && x < SluttVerdi + 0.1);
                 Prosent = (double)countInInterval / totalLengder * 100;
             }
+            AnalyseXYViewModel.Instance.RecalculateTotalPercentage();
+
         }
     }
 }
