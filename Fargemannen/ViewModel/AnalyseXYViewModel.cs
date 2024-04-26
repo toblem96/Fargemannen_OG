@@ -137,6 +137,7 @@ namespace Fargemannen.ViewModel
         public ICommand UpdatePercentagesCommand { get; private set; }
         public ICommand VelgAnalyseXYCommand { get; private set; }
         public ICommand ChooseColorCommand { get; private set; }
+        public ICommand OppdaterTotalProsetCommand { get; private set; }
         public AnalyseXYViewModel()
         {
 
@@ -158,8 +159,9 @@ namespace Fargemannen.ViewModel
         };
             VelgAnalyseXYCommand = new RelayCommand(SetAnalyseXYOmeråde);
             ChooseColorCommand = new RelayCommand<Intervall>(ChooseColor);
-           
-            
+            OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
+
+
             UpdateIntervalsAndCalculatePercentages();
 
             UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
@@ -197,73 +199,13 @@ namespace Fargemannen.ViewModel
             MaxVerdiXY = Fargemannen.Model.AnalyseXYModel.maxVerdiXY;
         }
 
-
-
-        private void RecalculateIntervals()
-        {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
-            if (lengdeVerdier == null || lengdeVerdier.Count == 0)
-            {
-                foreach (var intervall in Intervaller)
-                {
-                    intervall.Prosent = 0;  // Sørger for at prosenten settes til 0 hvis det ikke er noen verdier
-                }
-                return;
-            }
-
-            int totalLengder = lengdeVerdier.Count;
-            foreach (var intervall in Intervaller)
-            {
-                int countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x < intervall.SluttVerdi + 0.1);
-                intervall.Prosent = (double)countInInterval / totalLengder * 100;
-                intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Sørger for å utløse PropertyChanged for Prosent
-            }
-        }
-
-
-
         public void RecalculateTotalPercentage()
         {
             TotalProsent = Intervaller.Sum(intervall => intervall.Prosent);
             OnPropertyChanged(nameof(TotalProsent)); // Sørger for å oppdatere UI med den nye totalen
         }
 
-        private void FyllVerdier()
-        {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
-            if (lengdeVerdier == null || lengdeVerdier.Count == 0)
-                return; // Ingen verdier å prosessere
-
-            double minVerdi = 0;  // Starter alltid på 0
-            double maxVerdi = lengdeVerdier.Max();
-
-
-            int antallIntervaller = Intervaller.Count;
-            double totalRange = maxVerdi - minVerdi + 1; // +1 for å tillate siste intervall å slutte på x.9
-            double intervallStørrelse = Math.Floor(totalRange / antallIntervaller);
-
-            for (int i = 0; i < antallIntervaller; i++)
-            {
-                var intervall = Intervaller[i];
-                intervall.StartVerdi = minVerdi + i * intervallStørrelse;
-                intervall.SluttVerdi = intervall.StartVerdi + intervallStørrelse - 0.1; // Justering for å ende på x.9
-
-                // Sørger for at sluttverdien av siste intervall korrekt ender på x.9 av den høyeste verdien
-                if (i == antallIntervaller - 1 && intervall.SluttVerdi < maxVerdi)
-                {
-                    intervall.SluttVerdi = maxVerdi - 0.1; // Justerer siste intervall hvis det ikke dekker helt til maxVerdi
-                }
-
-                intervall.Farge = intervall.Farge;  // Oppdaterer farge hvis nødvendig, kan utløse OnPropertyChanged
-            }
-            int totalLengder = lengdeVerdier.Count;
-            foreach (var intervall in Intervaller)
-            {
-                int countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x < intervall.SluttVerdi + 0.1); // +0.1 for å inkludere grenseverdien
-                intervall.Prosent = (double)countInInterval / totalLengder * 100;
-            }
-        }
-
+     
         private void UpdateIntervalsAndCalculatePercentages()
         {
             var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
@@ -298,52 +240,12 @@ namespace Fargemannen.ViewModel
                 intervall.Prosent = (double)countInInterval / totalLengder * 100;
 
                 intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Oppdaterer UI for hver endring
+                RecalculateTotalPercentage();
             }
         }
 
 
-        /*
-         * Se om den er like den over eller ikke, skal oppdatere en TOT:prossent, Husk at View ikke er oppdatert 
-         * 
-         * 
-        private void UpdateIntervalsAndCalculatePercentages()
-        {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
-            double totalPercent = 0;
-
-            if (lengdeVerdier == null || lengdeVerdier.Count == 0)
-            {
-                foreach (var intervall in Intervaller)
-                {
-                    intervall.Prosent = 0;
-                    intervall.OnPropertyChanged(nameof(Intervall.Prosent));
-                }
-                TotalProsent = 0;  // Setter totalprosent til 0 hvis ingen verdier
-                return;
-            }
-
-            int totalLengder = lengdeVerdier.Count;
-
-            foreach (var intervall in Intervaller)
-            {
-                var countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x <= intervall.SluttVerdi);
-                var currentProsent = (double)countInInterval / totalLengder * 100;
-                intervall.Prosent = currentProsent;
-                totalPercent += currentProsent;
-                intervall.OnPropertyChanged(nameof(Intervall.Prosent));
-            }
-
-            TotalProsent = totalPercent;  // Oppdaterer den totale prosenten
-            OnPropertyChanged(nameof(TotalProsent));
-        }
-    }
-        */
-
-
-
-
-
-    private void SetAnalyseXYOmeråde()
+        private void SetAnalyseXYOmeråde()
         {
             var selectedTypesXY = SonderingTypesXY.Where(x => x.IsChecked).Select(x => x.Name).ToList();
 
@@ -553,7 +455,7 @@ namespace Fargemannen.ViewModel
                 int countInInterval = lengdeVerdier.Count(x => x >= StartVerdi && x < SluttVerdi + 0.1);
                 Prosent = (double)countInInterval / totalLengder * 100;
             }
-           // AnalyseXYViewModel.Instance.RecalculateTotalPercentage();
+      
 
         }
     }

@@ -134,7 +134,8 @@
 
                         <TextBlock Text="{Binding TotalProsent, StringFormat='Total Prosent: {0:N2}%'}"
                    HorizontalAlignment="Center" VerticalAlignment="Top"
-                   FontSize="16" Margin="10"/>
+                   FontSize="15" Margin="10" FontFamily="Artifakt Element Medium"/>
+                        <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130"/>
 
                     </StackPanel>
                 </Grid>
