@@ -16,6 +16,8 @@ using System.Windows.Forms;
 using Fargemannen.Model;
 using System.Drawing;
 using System;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Colors;
 
 namespace Fargemannen.ViewModel
 {
@@ -119,6 +121,7 @@ namespace Fargemannen.ViewModel
                 {
                     _sliderValue = value;
                     OnPropertyChanged(nameof(SliderValue));
+                    UpdateLayerTransparency(value);
                 }
             }
         }
@@ -197,6 +200,51 @@ namespace Fargemannen.ViewModel
             Intervaller.Add(new Intervall { Navn = "Intervall_5", StartVerdi = 11, SluttVerdi = 20, Farge = "#ff3f00" });
 
 
+        }
+        private void UpdateLayerTransparency(int transparencyPercent)
+        {
+            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;
+
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (acDoc.LockDocument())
+            {
+                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
+                BlockTable bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+
+                byte transparencyValue = (byte)(255 * (1 - transparencyPercent / 100.0));  // Beregner transparensverdien
+
+                for (int i = 1; i <= 5; i++)
+                {
+                    string layerName = $"Intervall_{i}";
+                    if (lt.Has(layerName))
+                    {
+                        LayerTableRecord ltr = (LayerTableRecord)acTrans.GetObject(lt[layerName], OpenMode.ForWrite);
+                        ltr.Transparency = new Transparency(transparencyValue);
+                        ltr.IsPlottable = true;  // Sørger for at laget er plottbart
+
+                        // Gå gjennom alle blokker for å finne og oppdatere hatcher
+                        foreach (ObjectId btrId in bt)
+                        {
+                            BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(btrId, OpenMode.ForRead);
+                            foreach (ObjectId entId in btr)
+                            {
+                                Entity ent = (Entity)acTrans.GetObject(entId, OpenMode.ForRead);
+                                if (ent.Layer == layerName && ent is Hatch)
+                                {
+                                    ent.UpgradeOpen();  // Gjør entiteten skrivbar
+                                    Hatch hatch = ent as Hatch;
+                                    hatch.Transparency = new Transparency(transparencyValue);  // Setter transparensen
+                                    hatch.DowngradeOpen();  // Nedgraderer tilgangen tilbake til les
+                                }
+                            }
+                        }
+                    }
+                }
+
+                acTrans.Commit();
+                acDoc.Editor.Regen();// Lagrer endringene i databasen
+            }
         }
 
         private void ChooseColor(Intervall intervall)
@@ -297,12 +345,20 @@ namespace Fargemannen.ViewModel
 
             ed.WriteMessage(Fargemannen.Model.AnalyseXYModel.lengdeVerdier.Count.ToString());
         }
+        public List<Intervall> GetIntervallListe()
+        {
+            return Intervaller.ToList();
+        }
 
 
         public void LagFargekart()
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
+
+            var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
+
+            Model.AnalyseXYModel.PlasserFirkanterIIntervallLayersOgFyllMedFarge(SliderValue, intervallListe);
 
             ed.WriteMessage($"{SliderValue}");
         }
@@ -423,7 +479,33 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                    OnPropertyChanged(nameof(Brush));
+
+                    if (!string.IsNullOrEmpty(Navn))
+                    {
+                        Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                        Database acCurDb = acDoc.Database;
+
+                        using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                        {
+                            using (acDoc.LockDocument())
+                            {
+                                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
+
+                                if (lt.Has(Navn))  // Sjekk om laget eksisterer
+                                {
+                                    LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[Navn], OpenMode.ForWrite);
+                                    ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(Farge));
+                                    OnPropertyChanged(nameof(Brush));
+                                    acTrans.Commit();  // Commit kun hvis endringer er gjort
+                                    acDoc.Editor.Regen();
+                                }
+                                else
+                                {
+                                
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -479,6 +561,20 @@ namespace Fargemannen.ViewModel
             }
       
 
+        }
+        private static System.Drawing.Color ConvertHexToDrawingColor(string hexColor)
+        {
+            if (string.IsNullOrEmpty(hexColor))
+                return System.Drawing.Color.Transparent;  // Returnerer transparent hvis ingen farge er spesifisert
+
+            try
+            {
+                return System.Drawing.ColorTranslator.FromHtml(hexColor);
+            }
+            catch
+            {
+                return System.Drawing.Color.Black;  // Returnerer svart som fallback
+            }
         }
     }
 }

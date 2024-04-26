@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Fargemannen.ViewModel;
+ 
 
 namespace Fargemannen.Model
 {
@@ -202,7 +204,7 @@ namespace Fargemannen.Model
 
         }
 
-        public static void PlasserFirkanterIIntervallLayersOgFyllMedFarge()
+        public static void PlasserFirkanterIIntervallLayersOgFyllMedFarge(double gjennomsiktighet, List<Fargemannen.ViewModel.Intervall> intervaller)
         {
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             if (acDoc == null)
@@ -220,6 +222,10 @@ namespace Fargemannen.Model
                 {
                     LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
                     BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
+                    BlockTable bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+
+
+                    ClearLayers(acTrans, lt, bt, intervaller);
 
                     int processedItems = 0;
                     try
@@ -227,11 +233,11 @@ namespace Fargemannen.Model
                         foreach (var lengde in lengdeVerdier)
                         {
                             Autodesk.AutoCAD.DatabaseServices.Polyline pl = MiniPlList[processedItems];
-                            foreach (var intervall in Intervall.intervallListe)
+                            foreach (var intervall in intervaller)
                             {
-                                if (lengde >= intervall.Start && lengde <= intervall.Slutt)
+                                if (lengde >= intervall.StartVerdi && lengde <= intervall.SluttVerdi)
                                 {
-                                    ProcessLayerAndHatch(lt, btr, acTrans, intervall, pl);
+                                    ProcessLayerAndHatch(lt, btr, acTrans, intervall, pl, gjennomsiktighet);
                                     break; // Exit the loop once the correct interval is processed
                                 }
                             }
@@ -252,26 +258,26 @@ namespace Fargemannen.Model
             progressWindow.Complete();  // Close the progress bar window after completion
         }
 
-        private static void ProcessLayerAndHatch(LayerTable lt, BlockTableRecord btr, Transaction acTrans, Intervall intervall, Autodesk.AutoCAD.DatabaseServices.Polyline pl)
+        private static void ProcessLayerAndHatch(LayerTable lt, BlockTableRecord btr, Transaction acTrans, Fargemannen.ViewModel.Intervall intervall, Autodesk.AutoCAD.DatabaseServices.Polyline pl, double gjennomsiktighet)
         {
-            if (!lt.Has(intervall.LagNavn))
+            if (!lt.Has(intervall.Navn))
             {
                 lt.UpgradeOpen();  // Oppgraderer LayerTable til skrivemodus
                 LayerTableRecord ltr = new LayerTableRecord
                 {
-                    Name = intervall.LagNavn  // Setter navnet på det nye laget
+                    Name = intervall.Navn  // Setter navnet på det nye laget
                 };
                 ObjectId layerId = lt.Add(ltr);
                 acTrans.AddNewlyCreatedDBObject(ltr, true);  // Legger til det nye laget i transaksjonen
             }
 
             // Henter det eksisterende eller nyopprettede laget for modifikasjon
-            LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[intervall.LagNavn], OpenMode.ForWrite);
-            ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(intervall.Farge);
+            LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[intervall.Navn], OpenMode.ForWrite);
+            ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(intervall.Farge));
             ltrExisting.IsPlottable = true;  // Sørger for at laget er plottbart
 
 
-            byte transparencyValue = (byte)(255 * (1 - Analyse.gjennomsiktighet / 100.0)); // Korrekt beregning for transparens
+            byte transparencyValue = (byte)(255 * (1 - gjennomsiktighet / 100.0)); // Korrekt beregning for transparens
             ltrExisting.Transparency = new Transparency(transparencyValue);
 
             // Oppretter et nytt Hatch-objekt
@@ -282,10 +288,56 @@ namespace Fargemannen.Model
             hatch.Associative = true;
             hatch.AppendLoop(HatchLoopTypes.Outermost, new ObjectIdCollection(new ObjectId[] { pl.ObjectId }));
             hatch.EvaluateHatch(true);
-            hatch.Layer = intervall.LagNavn;  // Setter hatchets lag til intervallens lag
+            hatch.Layer = intervall.Navn;  // Setter hatchets lag til intervallens lag
 
 
 
+        }
+        private static void ClearLayers(Transaction acTrans, LayerTable lt, BlockTable btr, List<Fargemannen.ViewModel.Intervall> intervaller)
+        {
+            foreach (var intervall in intervaller)
+            {
+                if (lt.Has(intervall.Navn))
+                {
+                    // Henter det eksisterende laget for modifikasjon
+                    LayerTableRecord ltr = (LayerTableRecord)acTrans.GetObject(lt[intervall.Navn], OpenMode.ForWrite);
+
+                    // Finner og sletter alle objekter på dette laget
+                    var allObjects = new ObjectIdCollection();
+                    foreach (ObjectId btrId in btr)
+                    {
+                        BlockTableRecord block = (BlockTableRecord)acTrans.GetObject(btrId, OpenMode.ForRead);
+                        foreach (ObjectId objId in block)
+                        {
+                            Entity entity = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                            if (entity.Layer == intervall.Navn)
+                            {
+                                allObjects.Add(objId);
+                            }
+                        }
+                    }
+
+                    foreach (ObjectId objId in allObjects)
+                    {
+                        DBObject obj = acTrans.GetObject(objId, OpenMode.ForWrite, true);
+                        obj.Erase();
+                    }
+                }
+            }
+        }
+        private static System.Drawing.Color ConvertHexToDrawingColor(string hexColor)
+        {
+            if (string.IsNullOrEmpty(hexColor))
+                return System.Drawing.Color.Transparent;  // Returnerer transparent hvis ingen farge er spesifisert
+
+            try
+            {
+                return System.Drawing.ColorTranslator.FromHtml(hexColor);
+            }
+            catch
+            {
+                return System.Drawing.Color.Black;  // Returnerer svart som fallback
+            }
         }
 
 

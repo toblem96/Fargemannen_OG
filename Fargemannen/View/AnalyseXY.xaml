@@ -145,7 +145,7 @@
                      Maximum="100"
                      Grid.Column="0"
                      Grid.Row="2"
-                            Width="250"/>
+                            Width="250" TickFrequency="10"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                             Grid.Column="0" Grid.Row="3" Margin="0,25" Width="120" Height="40"/>
                 </Grid>
