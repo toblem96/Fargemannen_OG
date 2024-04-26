@@ -108,7 +108,20 @@ namespace Fargemannen.ViewModel
                 }
             }
         }
+        private int _sliderValue = 50; // Startverdi som et eksempel
 
+        public int SliderValue
+        {
+            get => _sliderValue;
+            set
+            {
+                if (_sliderValue != value)
+                {
+                    _sliderValue = value;
+                    OnPropertyChanged(nameof(SliderValue));
+                }
+            }
+        }
         public double MaxVerdiXY
         {
             get => _maxVerdiXY;
@@ -138,6 +151,9 @@ namespace Fargemannen.ViewModel
         public ICommand VelgAnalyseXYCommand { get; private set; }
         public ICommand ChooseColorCommand { get; private set; }
         public ICommand OppdaterTotalProsetCommand { get; private set; }
+        public ICommand KjørFargekartCommand { get; private set; }
+        
+
         public AnalyseXYViewModel()
         {
 
@@ -160,7 +176,7 @@ namespace Fargemannen.ViewModel
             VelgAnalyseXYCommand = new RelayCommand(SetAnalyseXYOmeråde);
             ChooseColorCommand = new RelayCommand<Intervall>(ChooseColor);
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
-
+            KjørFargekartCommand = new RelayCommand(LagFargekart);
 
             UpdateIntervalsAndCalculatePercentages();
 
@@ -283,7 +299,13 @@ namespace Fargemannen.ViewModel
         }
 
 
-        //KNAP FOR Å STARTE PROSSESEN 
+        public void LagFargekart()
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            ed.WriteMessage($"{SliderValue}");
+        }
 
 
         public static List<Point3d> NullstillZVerdierOgLagreIAnalyseListe(List<Point3d> punkterMesh)

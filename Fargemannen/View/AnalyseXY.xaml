@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Fargemannen.View"
               xmlns:vm="clr-namespace:Fargemannen.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="700">
     <Grid DataContext="{Binding Source={x:Static vm:AnalyseXYViewModel.Instance}}">
         <TabControl>
             <TabItem Header="Velg Analyse Omeråde">
@@ -136,8 +136,18 @@
                    HorizontalAlignment="Center" VerticalAlignment="Top"
                    FontSize="15" Margin="10" FontFamily="Artifakt Element Medium"/>
                         <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130"/>
-
+                        
                     </StackPanel>
+                    <TextBlock Text="Gjennomsiktighet" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"
+                               HorizontalAlignment="Center" Margin="0,20,0,15"/>
+                    <Slider Value="{Binding SliderValue}"
+                     Minimum="0" 
+                     Maximum="100"
+                     Grid.Column="0"
+                     Grid.Row="2"
+                            Width="250"/>
+                    <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
+                            Grid.Column="0" Grid.Row="3" Margin="0,25" Width="120" Height="40"/>
                 </Grid>
             </TabItem>
         </TabControl>
