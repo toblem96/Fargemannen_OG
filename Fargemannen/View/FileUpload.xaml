@@ -33,8 +33,16 @@
         <TextBox Text="{Binding KofFilePath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" Margin="5" Padding="3"/>
 
         <!-- TOT File Upload -->
-        <Button Content="Last opp TOT" Command="{Binding UploadTotCommand}" Grid.Row="3" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding TotFilePath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" Grid.Column="1" Margin="5" Padding="3"/>
+        <Button Content="Last opp TOT" Command="{Binding UploadTotCommand}" Grid.Row="3" Grid.Column="0" Margin="5" Padding="5" Height="30" VerticalAlignment="Top"/>
+        <ListBox ItemsSource="{Binding TotFilePaths, UpdateSourceTrigger=PropertyChanged}"
+         Grid.Row="3" Grid.Column="1" Margin="5" Height="60"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="NoWrap" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <!-- Report Folder Upload -->
         <Button Content="Last opp Rapport mappe" Command="{Binding UploadReportFolderCommand}" Grid.Row="4" Grid.Column="0" Margin="5" Padding="5"/>

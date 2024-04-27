@@ -23,7 +23,7 @@ namespace Fargemannen.ViewModel
         private string _sosiFilePath;
         private string _sosidagenFilePath;
         private string _kofFilePath;
-        private string _totFilePath;
+        private List<string> _totFilePaths;
         private string _reportFolderPath;
         private string _sampleResultsFolderPath;
         public Dictionary<string, string> ReportFiles { get; private set; }
@@ -37,11 +37,11 @@ namespace Fargemannen.ViewModel
             get => _sosiFilePath;
             set
             {
-                if (_sosiFilePath == value) return;
-                _sosiFilePath = value;
+                var fileName = Path.GetFileName(value); // Hent ut kun filnavnet
+                if (_sosiFilePath == fileName) return;
+                _sosiFilePath = fileName;
                 OnPropertyChanged(nameof(SosiFilePath));
                 ClearError();
-                System.Diagnostics.Debug.WriteLine($"SosiFilePath updated: {_sosiFilePath}");  // Diagnostisk utskrift
             }
         }
 
@@ -50,7 +50,9 @@ namespace Fargemannen.ViewModel
             get => _sosidagenFilePath;
             set
             {
-                _sosidagenFilePath = value;
+                var fileName = Path.GetFileName(value);
+                if (_sosidagenFilePath == fileName) return;
+                _sosidagenFilePath = fileName;
                 OnPropertyChanged(nameof(SosidagenFilePath));
                 ClearError();
             }
@@ -61,19 +63,22 @@ namespace Fargemannen.ViewModel
             get => _kofFilePath;
             set
             {
-                _kofFilePath = value;
+                var fileName = Path.GetFileName(value);
+                if (_kofFilePath == fileName) return;
+                _kofFilePath = fileName;
                 OnPropertyChanged(nameof(KofFilePath));
                 ClearError();
             }
         }
 
-        public string TotFilePath
+        public List<string> TotFilePaths
         {
-            get => _totFilePath;
+            get => _totFilePaths;
             set
             {
-                _totFilePath = value;
-                OnPropertyChanged(nameof(TotFilePath));
+                if (_totFilePaths == value) return;
+                _totFilePaths = value;
+                OnPropertyChanged(nameof(TotFilePaths));
                 ClearError();
             }
         }
@@ -144,6 +149,8 @@ namespace Fargemannen.ViewModel
 
             ReportFiles = new Dictionary<string, string>();
             SampleResultFiles = new Dictionary<string, string>();
+
+            _totFilePaths = new List<string>();
         }
         private void UploadReportFolder()
         {
@@ -202,7 +209,7 @@ namespace Fargemannen.ViewModel
             {
                 ErrorMessage = "Ingen SOSI fil ble valgt.";
             }
-            doc.Editor.WriteMessage(SosiFilePath + "------------------------------------");
+            
         }
 
         private void ClearError()
@@ -238,14 +245,23 @@ namespace Fargemannen.ViewModel
 
         private void UploadTot()
         {
-            OpenFileDialog fileDialog = new OpenFileDialog
+            var fileDialog = new OpenFileDialog
             {
-                Filter = "TOT-filer|*.tot"  // Placeholder, replace with actual extension
+                Filter = "TOT-filer|*.tot",  // Placeholder, replace with actual extension
+                Multiselect = true  // Allow multiple file selection
             };
 
             if (fileDialog.ShowDialog() == true)
             {
-                TotFilePath = fileDialog.FileName;
+                foreach (var fileName in fileDialog.FileNames)
+                {
+                    _totFilePaths.Add(fileName);
+                }
+                OnPropertyChanged(nameof(TotFilePaths));  // Notify that the file list has changed
+            }
+            else
+            {
+                ErrorMessage = "Ingen TOT filer ble valgt.";
             }
         }
 
