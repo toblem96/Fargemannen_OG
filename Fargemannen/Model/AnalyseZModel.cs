@@ -13,6 +13,7 @@ using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil;
 using Autodesk.Civil.DatabaseServices.Styles;
+using Autodesk.AutoCAD.Customization;
 namespace Fargemannen.Model
 {
     internal class AnalyseZModel
@@ -154,14 +155,17 @@ namespace Fargemannen.Model
             foreach (DBPoint midPointEntity in MidPointsZ)
             {
                 Point3d midPoint = midPointEntity.Position;
+                var (isInside, terrengIndex) = IsPointInsideBothBorders(new Point2d(midPoint.X, midPoint.Y), terrengBorders, bergGrenser);
 
-                if (!IsPointInsideBothBorders(new Point2d(midPoint.X, midPoint.Y), terrengBorders, bergGrenser))
+                if (!isInside)
                 {
                     VerdierZ.Add(-999);
                 }
                 else
                 {
-                    double elevationDifference = CalculateElevationDifference(acTrans, bergmodell, terrengmodeller, midPoint, bergGrenser, terrengBorders);
+                    // Hent den spesifikke terrengmodellen for det gjeldende punktet
+                    GridSurface specificSurface = terrengmodeller[terrengIndex.Value];
+                    double elevationDifference = CalculateElevationDifference(acTrans, bergmodell, specificSurface, midPoint);
                     VerdierZ.Add(elevationDifference);
                 }
             }
@@ -183,35 +187,32 @@ namespace Fargemannen.Model
             }
             return surfaces;
         }
-        private static bool IsPointInsideBothBorders(Point2d point, List<List<Point2d>> terrengBorders, List<Point2d> bergBorder)
+        private static (bool, int?) IsPointInsideBothBorders(Point2d point, List<List<Point2d>> terrengBorders, List<Point2d> bergBorder)
         {
-            bool insideAtLeastOneTerreng = terrengBorders.Any(terrengBorder => IsPointInsidePolygon(terrengBorder, point));
-            bool insideBerg = IsPointInsidePolygon(bergBorder, point);
-            return insideAtLeastOneTerreng && insideBerg;
-        }
-        private static double CalculateElevationDifference(Transaction acTrans, TinSurface bergmodell, List<GridSurface> terrengmodeller, Point3d midPoint, List<Point2d> bergGrenser, List<List<Point2d>> terrengBorders)
-        {
-            double minAvstandTilTerreng = double.MaxValue;
-            double avstandTilBerg = bergmodell.FindElevationAtXY(midPoint.X, midPoint.Y);
-
-            // Beregn nærmeste avstand fra terrengmodellene til midtpunktet
-            foreach (GridSurface surface in terrengmodeller)
+            int? insideTerrengIndex = null;
+            for (int i = 0; i < terrengBorders.Count; i++)
             {
-                double avstandTilTerreng = surface.FindElevationAtXY(midPoint.X, midPoint.Y);
-                if (avstandTilTerreng < minAvstandTilTerreng)
+                if (IsPointInsidePolygon(terrengBorders[i], point))
                 {
-                    minAvstandTilTerreng = avstandTilTerreng;
+                    insideTerrengIndex = i;
+                    break;
                 }
             }
 
-            // Beregn differansen i høyden hvis en gyldig terrengmodell ble funnet
-            if (minAvstandTilTerreng != double.MaxValue)
-            {
-                double differanse = Math.Round(minAvstandTilTerreng - avstandTilBerg);
-                return Math.Round(Math.Max(0, differanse)); // Returner differansen, men minimum 0
-            }
+            bool insideBerg = IsPointInsidePolygon(bergBorder, point);
+            return (insideBerg && insideTerrengIndex != null, insideTerrengIndex);
+        }
+        private static double CalculateElevationDifference(Transaction acTrans, TinSurface bergmodell, GridSurface terrengmodell, Point3d midPoint)
+        {
+            
+            double avstandTilBerg = bergmodell.FindElevationAtXY(midPoint.X, midPoint.Y);
+             double avstandTilTerreng = terrengmodell.FindElevationAtXY(midPoint.X, midPoint.Y);
+          
 
-            return -999; // Returner -999 hvis ingen gyldig terrengmodell var innen rekkevidde
+          
+                double differanse = Math.Round(avstandTilTerreng - avstandTilBerg);
+                return Math.Round(Math.Max(0, differanse)); // Returner differansen, men minimum 0
+ 
         }
 
         private static List<Point2d> ExtractBorders(Transaction acTrans, GridSurface surface)
@@ -397,7 +398,7 @@ namespace Fargemannen.Model
             gjennomsnittVerdiZ = VerdierZ.Average();
         }
 
-        public static void PlasserFirkanterIIntervallLayersOgFyllMedFargeZ()
+        public static void PlasserFirkanterIIntervallLayersOgFyllMedFargeZ(double Gjennomsiktighet, List<Fargemannen.ViewModel.IntervallZ> intervaller)
         {
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             if (acDoc == null)
@@ -421,16 +422,24 @@ namespace Fargemannen.Model
                     {
                         foreach (var lengde in VerdierZ)
                         {
-                            Autodesk.AutoCAD.DatabaseServices.Polyline pl = MiniPlListZ[processedItems];
-                            foreach (var intervall in Intervall.intervallListeZ)
+                            if (lengde != -999)
                             {
-                                if (lengde >= intervall.Start && lengde <= intervall.Slutt)
+
+                            
+                            Autodesk.AutoCAD.DatabaseServices.Polyline pl = MiniPlListZ[processedItems];
+                            foreach (var intervall in intervaller)
+                            {
+                                if (lengde >= intervall.StartVerdi && lengde <= intervall.SluttVerdi)
                                 {
-                                    ProcessLayerAndHatch(lt, btr, acTrans, intervall, pl);
+                                    ProcessLayerAndHatch(lt, btr, acTrans, intervall, pl, Gjennomsiktighet);
                                     break; // Exit the loop once the correct interval is processed
                                 }
+                                }
                             }
+                            else
+                            {
 
+                            }
                             processedItems++;
                             progressWindow.UpdateProgress(processedItems); // Update the progress bar each time an item is processed
                         }
@@ -447,26 +456,26 @@ namespace Fargemannen.Model
             progressWindow.Complete();  // Close the progress bar window after completion
         }
 
-        private static void ProcessLayerAndHatch(LayerTable lt, BlockTableRecord btr, Transaction acTrans, Intervall intervall, Autodesk.AutoCAD.DatabaseServices.Polyline pl)
+        private static void ProcessLayerAndHatch(LayerTable lt, BlockTableRecord btr, Transaction acTrans, Fargemannen.ViewModel.IntervallZ intervall, Autodesk.AutoCAD.DatabaseServices.Polyline pl, double Gjennomsiktighet)
         {
-            if (!lt.Has(intervall.LagNavn))
+            if (!lt.Has(intervall.Navn))
             {
                 lt.UpgradeOpen();  // Oppgraderer LayerTable til skrivemodus
                 LayerTableRecord ltr = new LayerTableRecord
                 {
-                    Name = intervall.LagNavn  // Setter navnet på det nye laget
+                    Name = intervall.Navn  // Setter navnet på det nye laget
                 };
                 ObjectId layerId = lt.Add(ltr);
                 acTrans.AddNewlyCreatedDBObject(ltr, true);  // Legger til det nye laget i transaksjonen
             }
 
             // Henter det eksisterende eller nyopprettede laget for modifikasjon
-            LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[intervall.LagNavn], OpenMode.ForWrite);
-            ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(intervall.Farge);
+            LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[intervall.Navn], OpenMode.ForWrite);
+            ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(intervall.Farge));
             ltrExisting.IsPlottable = true;  // Sørger for at laget er plottbart
 
 
-            byte transparencyValue = (byte)(255 * (1 - Analyse.gjennomsiktighet / 100.0)); // Korrekt beregning for transparens
+            byte transparencyValue = (byte)(255 * (1 - Gjennomsiktighet / 100.0)); // Korrekt beregning for transparens
             ltrExisting.Transparency = new Transparency(transparencyValue);
 
             // Oppretter et nytt Hatch-objekt
@@ -477,13 +486,59 @@ namespace Fargemannen.Model
             hatch.Associative = true;
             hatch.AppendLoop(HatchLoopTypes.Outermost, new ObjectIdCollection(new ObjectId[] { pl.ObjectId }));
             hatch.EvaluateHatch(true);
-            hatch.Layer = intervall.LagNavn;  // Setter hatchets lag til intervallens lag
+            hatch.Layer = intervall.Navn;  // Setter hatchets lag til intervallens lag
 
 
             DrawOrderTable dot = (DrawOrderTable)acTrans.GetObject(btr.DrawOrderTableId, OpenMode.ForWrite);
             dot.MoveToBottom(new ObjectIdCollection(new ObjectId[] { hatch.ObjectId }));
         }
 
+        private static void ClearLayers(Transaction acTrans, LayerTable lt, BlockTable btr, List<Fargemannen.ViewModel.Intervall> intervaller)
+        {
+            foreach (var intervall in intervaller)
+            {
+                if (lt.Has(intervall.Navn))
+                {
+                    // Henter det eksisterende laget for modifikasjon
+                    LayerTableRecord ltr = (LayerTableRecord)acTrans.GetObject(lt[intervall.Navn], OpenMode.ForWrite);
+
+                    // Finner og sletter alle objekter på dette laget
+                    var allObjects = new ObjectIdCollection();
+                    foreach (ObjectId btrId in btr)
+                    {
+                        BlockTableRecord block = (BlockTableRecord)acTrans.GetObject(btrId, OpenMode.ForRead);
+                        foreach (ObjectId objId in block)
+                        {
+                            Autodesk.AutoCAD.DatabaseServices.Entity entity = (Autodesk.AutoCAD.DatabaseServices.Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                            if (entity.Layer == intervall.Navn)
+                            {
+                                allObjects.Add(objId);
+                            }
+                        }
+                    }
+
+                    foreach (ObjectId objId in allObjects)
+                    {
+                        Autodesk.AutoCAD.DatabaseServices.DBObject obj = acTrans.GetObject(objId, OpenMode.ForWrite, true);
+                        obj.Erase();
+                    }
+                }
+            }
+        }
+        private static System.Drawing.Color ConvertHexToDrawingColor(string hexColor)
+        {
+            if (string.IsNullOrEmpty(hexColor))
+                return System.Drawing.Color.Transparent;  // Returnerer transparent hvis ingen farge er spesifisert
+
+            try
+            {
+                return System.Drawing.ColorTranslator.FromHtml(hexColor);
+            }
+            catch
+            {
+                return System.Drawing.Color.Black;  // Returnerer svart som fallback
+            }
+        }
 
 
 
