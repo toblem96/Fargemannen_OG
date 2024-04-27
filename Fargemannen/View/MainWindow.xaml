@@ -18,6 +18,10 @@
             <TabItem Header="AnalyseXY">
                 <local:AnalyseXY />
             </TabItem>
+            <TabItem Header="AnalyseZ">
+                <local:AnalyseZ />
+            </TabItem>
+
         </TabControl>
     </Grid>
 </Window>

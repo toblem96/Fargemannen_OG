@@ -15,7 +15,8 @@
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="136"/>
                         <ColumnDefinition Width="5.188"/>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="46.051"/>
+                        <ColumnDefinition Width="33.949"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/>
@@ -47,7 +48,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <StackPanel Grid.Column="3" Grid.Row="4" Orientation="Vertical" Grid.ColumnSpan="3" Margin="80,0,380,17">
+                    <StackPanel Grid.Column="4" Grid.Row="4" Orientation="Vertical" Grid.ColumnSpan="3" Margin="34,0,380,17">
                         <TextBlock Text="Minimums årsgrense:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
@@ -63,13 +64,9 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="Auto"/>
-                        <!-- For labels and textboxes -->
                         <ColumnDefinition Width="*"/>
-                        <!-- Extra space -->
                         <ColumnDefinition Width="Auto"/>
-                        <!-- For the color rectangle -->
                         <ColumnDefinition Width="20"/>
-                        <!-- Width for the color rectangle, increased size -->
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -136,7 +133,7 @@
                    HorizontalAlignment="Center" VerticalAlignment="Top"
                    FontSize="15" Margin="10" FontFamily="Artifakt Element Medium"/>
                         <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130"/>
-                        
+
                     </StackPanel>
                     <TextBlock Text="Gjennomsiktighet" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"
                                HorizontalAlignment="Center" Margin="0,20,0,15"/>
@@ -145,9 +142,9 @@
                      Maximum="100"
                      Grid.Column="0"
                      Grid.Row="2"
-                            Width="250" TickFrequency="10"/>
+                     Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
-                            Grid.Column="0" Grid.Row="3" Margin="0,25" Width="120" Height="40"/>
+                            Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
                 </Grid>
             </TabItem>
         </TabControl>
