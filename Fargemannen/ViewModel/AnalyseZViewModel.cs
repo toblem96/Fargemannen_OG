@@ -33,6 +33,7 @@ namespace Fargemannen.ViewModel
         private double _totalProsent;
         private string _BergmodellNavn = "Bergmodell";
         private string _BergmodellLagNavn = "Bergmodell";
+        private string _TerrengModellLagNavn = "C-TOPO-GRID";
 
 
 
@@ -90,6 +91,17 @@ namespace Fargemannen.ViewModel
                     _BergmodellLagNavn = value;
                     OnPropertyChanged(nameof(BergmodellLagNavn));
                 }
+            }
+        }
+        public string TerrengModellLagNavn
+        {
+            get => _TerrengModellLagNavn;
+            set
+            {
+                if (value != _TerrengModellLagNavn)
+
+                    _TerrengModellLagNavn = value;
+                OnPropertyChanged(nameof(TerrengModellLagNavn));
             }
         }
 
@@ -159,7 +171,7 @@ namespace Fargemannen.ViewModel
             string ProjectType = "";
 
 
-
+            ed.WriteMessage(punkterMesh.Count.ToString());
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
 
             Fargemannen.Model.AnalyseZModel.GenererMeshFraPunkter(punkterMesh, BergmodellNavn, BergmodellLagNavn);
@@ -183,7 +195,8 @@ namespace Fargemannen.ViewModel
 
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
 
-         
+
+            Fargemannen.Model.AnalyseZModel.Start(punkterMesh, RuteStørresle, TerrengModellLagNavn, BergmodellLagNavn);
 
 
             var sortedValues = Fargemannen.Model.AnalyseZModel.VerdierZ.OrderBy(x => x).ToList();
@@ -196,8 +209,8 @@ namespace Fargemannen.ViewModel
 
 
 
+          
 
-            ed.WriteMessage(Fargemannen.Model.AnalyseXYModel.lengdeVerdier.Count.ToString());
         }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)

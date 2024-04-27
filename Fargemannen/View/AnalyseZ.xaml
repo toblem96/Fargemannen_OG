@@ -54,7 +54,10 @@
                         <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding RuteStørresle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
+                        <TextBlock Text="Navn på Terreng lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding TerrengModellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Navn på Bergmodell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+
                         <TextBox Text="{Binding BergmodellNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Navn på lag for bergmodell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
