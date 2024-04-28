@@ -28,6 +28,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 using Autodesk.AutoCAD.Runtime;
 
 using System.Windows.Forms;
+using Microsoft.ApplicationInsights;
 namespace Fargemannen.Model
 {
     public static class SymbolModel
@@ -63,12 +64,7 @@ namespace Fargemannen.Model
                 ed.WriteMessage($"GBUMetode: {pair.Key}, Antall: {pair.Value}\n");
             }
 
-            // Utlisting av boreMetoder_1
-            ed.WriteMessage("\nInnhold i boreMetoder_1:\n");
-            foreach (var metode in boreMetoder)
-            {
-                ed.WriteMessage($"{metode}\n");
-            }
+
         }
 
 
@@ -77,6 +73,9 @@ namespace Fargemannen.Model
 
         public static void test(List<PunktInfo> pointsToSymbol, List<string> metoder, double minGrenseBerg, System.Windows.Media.Color selectedColor, System.Windows.Media.Color selectedColor_minBerg)
         {
+            var telemetryClient = new TelemetryClient();
+            try 
+            { 
             SlettAlleBlokkerOgLag();
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly(); // Corrected with the proper using directive
@@ -101,8 +100,7 @@ namespace Fargemannen.Model
                 ["stans"] = "Fargemannen.Resources.stans.dwg"
             };
 
-            try
-            {
+           
                 using (var tr = db.TransactionManager.StartTransaction())
                 using (doc.LockDocument())
                 {
@@ -143,18 +141,31 @@ namespace Fargemannen.Model
                     }
 
                     tr.Commit();
-                }
+                        ed.Regen();
+                    }
             }
-            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            catch (Autodesk.AutoCAD.Runtime.Exception acEx)
             {
-                System.Windows.MessageBox.Show($"AutoCAD Runtime-feil: {ex.Message}", "Runtime Feil", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Sporer AutoCAD-spesifikke unntak
+                telemetryClient.TrackException(acEx, new Dictionary<string, string> {
+            {"Message", "AutoCAD Runtime Exception in SymbolModel.test"},
+            {"Method", "SymbolModel.test"},
+            {"Severity", "High"}
+        });
+                System.Windows.MessageBox.Show($"AutoCAD Runtime-feil: {acEx.Message}", "Runtime Feil", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (System.Exception ex)
             {
+                // Sporer generelle unntak
+                telemetryClient.TrackException(ex, new Dictionary<string, string> {
+            {"Message", "Unexpected Exception in SymbolModel.test"},
+            {"Method", "SymbolModel.test"},
+            {"Severity", "Critical"}
+        });
                 System.Windows.MessageBox.Show($"En uventet feil oppstod: {ex.Message}", "System Feil", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            ed.Regen();
+         
         }
 
         private static void ProcessPunkt(PunktInfo punkt, List<string> metoder, double minGrenseBerg, Dictionary<string, ObjectId> blockRefs, Database db, Transaction tr, string layerSymbol, string layerSymbolStansILos)

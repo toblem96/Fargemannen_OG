@@ -14,6 +14,8 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Forms;
 using Fargemannen.Model;
+using System;
+using Microsoft.ApplicationInsights;
 
 
 
@@ -365,29 +367,47 @@ namespace Fargemannen.ViewModel
         minDrillingSymbolColorCommand = new RelayCommand(ChooseminDrillingSymbolColor);
     }
 
-    private void ExecuteGenerateSymbols()
-    {
-        var selectedTypes = SonderingTypes.Where(x => x.IsChecked).Select(x => x.Name).ToList();
-        
 
-        Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-        Editor ed = doc.Editor;
-        
-        List<PunktInfo> pointsToSymbol = new List<PunktInfo>();
-        List<Point3d> punkterMesh = new List<Point3d>();
+        private void ExecuteGenerateSymbols()
+        {
+            var telemetryClient = new TelemetryClient();  // Pass inn din Instrumentation Key her om nødvendig
 
-       
+            try
+            {
+                // Spor bruk av knappen
+                telemetryClient.TrackEvent("Knapp generer Symbol");
 
+                var selectedTypes = SonderingTypes.Where(x => x.IsChecked).Select(x => x.Name).ToList();
 
-        ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypes, NummerType, ProjectType);
+                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Editor ed = doc.Editor;
 
-        SymbolModel.PrintValgtBoring(pointsToSymbol, selectedTypes);
-           
-        SymbolModel.test(pointsToSymbol, selectedTypes, MinDrillingDepth, NormalSymbolColor, minDrillingSymbolColor);
-         
+                List<PunktInfo> pointsToSymbol = new List<PunktInfo>();
+                List<Point3d> punkterMesh = new List<Point3d>();
+
+                ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypes, NummerType, ProjectType);
+
+                telemetryClient.TrackMetric("Number of Symbols Generated", pointsToSymbol.Count);
+
+                SymbolModel.PrintValgtBoring(pointsToSymbol, selectedTypes);
+                SymbolModel.test(pointsToSymbol, selectedTypes, MinDrillingDepth, NormalSymbolColor, minDrillingSymbolColor);
+
+            }
+            catch (Exception ex)
+            {
+                var properties = new Dictionary<string, string>
+        {
+            { "Error Message", ex.Message },
+            { "StackTrace", ex.StackTrace }
+        };
+                telemetryClient.TrackEvent("Application crash", properties);
+
+                // Her kan du også vurdere å logge mer detaljert informasjon om tilstanden i applikasjonen
+                // eller til og med sende en e-post til en administrator hvis det er nødvendig.
+            }
         }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
     protected virtual void OnPropertyChanged(string propertyName)
     {
