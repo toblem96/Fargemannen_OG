@@ -32,6 +32,7 @@ namespace Fargemannen.ViewModel
         public Dictionary<string, string> SampleResultFiles { get; private set; }
 
         private string _errorMessage;
+        public List<string> TotPaths;
 
 
         public string SosiFilePath
@@ -115,18 +116,20 @@ namespace Fargemannen.ViewModel
                 return parts.Length > 1 ? string.Join("\\", parts.Skip(parts.Length - 2)) : _fullKofFilePath;
             }
         }
+        public ObservableCollection<KeyValuePair<string, string>> TotFilePaths { get; private set; }
 
-        private ObservableCollection<string> _totFilePaths = new ObservableCollection<string>();
 
-        public ObservableCollection<string> TotFilePaths
+   
+        public List<string> GetTotFilePathsAsList()
         {
-            get => _totFilePaths;
-            set
-            {
-                _totFilePaths = value;
-                OnPropertyChanged(nameof(TotFilePaths));
-            }
+            return new List<string>(TotPaths);
         }
+        public void UpdateTotPaths()
+        {
+            TotPaths = TotFilePaths.Select(pair => pair.Key).ToList();  // Kopierer bare stiene
+            OnPropertyChanged(nameof(TotPaths));
+        }
+
 
         private string _infoTot;
         public string InfoTot
@@ -222,8 +225,9 @@ namespace Fargemannen.ViewModel
 
             ReportFiles = new Dictionary<string, string>();
             SampleResultFiles = new Dictionary<string, string>();
+            TotPaths = new List<string>();
+            TotFilePaths = new ObservableCollection<KeyValuePair<string, string>>();  // Initialiserer samlingen
 
-            
         }
         private void UploadReportFolder()
         {
@@ -323,18 +327,21 @@ namespace Fargemannen.ViewModel
             if (success == true)
             {
                 TotFilePaths.Clear();  // Tøm listen før nye filer legges til
-                foreach (string fileName in fileDialog.FileNames)
+                foreach (string filePath in fileDialog.FileNames)
                 {
-                    TotFilePaths.Add(System.IO.Path.GetFileName(fileName));  // Legg til kun filnavn
+                    var fileName = Path.GetFileName(filePath);
+                    TotFilePaths.Add(new KeyValuePair<string, string>(filePath, fileName));
                 }
                 Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Opplastet TOT-filer");
             }
             else
             {
                 TotFilePaths.Clear();
-                TotFilePaths.Add("Ingen filer ble valgt.");  // Vis denne meldingen i ListBox
+                TotFilePaths.Add(new KeyValuePair<string, string>("", "Ingen filer ble valgt."));
             }
+            UpdateTotPaths();  // Du kan beholde denne hvis du trenger en liste av bare stiene et annet sted
         }
+
 
         private void PrintDictionaryContents(Dictionary<string, string> dictionary, string dictionaryName)
         {

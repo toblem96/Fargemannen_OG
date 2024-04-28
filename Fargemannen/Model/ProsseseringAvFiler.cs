@@ -10,6 +10,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using System.Windows.Controls;
 using Fargemannen.ViewModel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 
@@ -282,12 +283,15 @@ namespace Fargemannen.Model
         //TOT OG KOF
         public static void ProcessTOTandKOFFiles(List<string> totFilePaths, string kofFilePath, List<PunktInfo> pointsToSymbol, List<Point3d> punkterMesh)
         {
+            int i=0;
             foreach (string totFilePath in totFilePaths)
             {
                 // Les TOT-fil
                 string totData = File.ReadAllText(totFilePath);
                 string[] totLines = totData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
+                
+                string MainID = "TOT_"+i;
+                i++;
                 string currentPunktID = null;
                 string currentGBUMethod = "Totalsondering";
 
@@ -340,7 +344,7 @@ namespace Fargemannen.Model
 
                         PunktInfo info = new PunktInfo
                         {
-                            
+                            MinPunktID = MainID,
                             Punkt = newPointKof,
                             RapportID = rapportID,
                             PunktID = currentPunktID,
@@ -448,6 +452,22 @@ namespace Fargemannen.Model
 
             string sosiFilePath = fileViewModel.SosiFilePath;
             string sosiDagenFilePath = fileViewModel.SosidagenFilePath;
+            List<string> totFilesPaths = fileViewModel.TotPaths;
+            string kofFilPath = fileViewModel.KofFilePath;
+
+            foreach (string tot in totFilesPaths)
+            {
+                ed.WriteMessage(tot);
+            }
+
+            
+            if (string.IsNullOrWhiteSpace(sosiDagenFilePath) && boreMetoder.Contains("Fjellidagen"))
+            {
+                Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Du har valgt fjell i dagen, men ikke lagt til en relevant SOSI-fil");
+                return;
+
+            }
+
 
             try
             {
@@ -455,42 +475,58 @@ namespace Fargemannen.Model
                 {
                     ed.WriteMessage("\nBoremetode: " + metode);
                 }
-                ValidateInput(pointsToSymbol, punkterMesh, minAr, boreMetoder, sosiFilePath, sosiDagenFilePath);
-                // Hvis validering er vellykket, prosesser filer
-                ProcessSOSIFilesBor(minAr, boreMetoder, sosiFilePath, pointsToSymbol, punkterMesh, NummerType, ProsjektType);
-                ProcessSOSIFilesIDagen(minAr, boreMetoder, sosiDagenFilePath, pointsToSymbol, punkterMesh, NummerType, ProsjektType);
+
+                ValidateInput(pointsToSymbol, punkterMesh, minAr, kofFilPath, sosiFilePath, sosiDagenFilePath);
+
+                if (!string.IsNullOrWhiteSpace(sosiFilePath))
+                {
+                    ProcessSOSIFilesBor(minAr, boreMetoder, sosiFilePath, pointsToSymbol, punkterMesh, NummerType, ProsjektType);
+                }
+                if (!string.IsNullOrWhiteSpace(sosiDagenFilePath))
+                {
+                    ProcessSOSIFilesIDagen(minAr, boreMetoder, sosiDagenFilePath, pointsToSymbol, punkterMesh, NummerType, ProsjektType);
+                }
+                if (!string.IsNullOrWhiteSpace(kofFilPath))
+                {
+                    ProcessTOTandKOFFiles(totFilesPaths, kofFilPath, pointsToSymbol, punkterMesh);
+                }
+
+
+               
+
+                
+
+                
+
+
             }
             catch (InvalidOperationException ex)
             {
                 Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog($"Input valideringsfeil: {ex.Message}");
                 return; // Avslutter metoden for å forhindre videre utførelse ved input feil
             }
-            catch (Autodesk.AutoCAD.Runtime.Exception ex)
-            {
-                ed.WriteMessage($"\nAutodesk AutoCAD Runtime Exception: {ex.Message}");
-                return; // Avslutter metoden ved AutoCAD-spesifikke unntak
-            }
-            catch (Exception ex)
-            {
-                ed.WriteMessage($"\nGenerell feil oppstod: {ex.Message}");
-                return; // Avslutter metoden for alle andre typer unntak
-            }
+
+            
+        
         }
 
-        public static void ValidateInput(List<PunktInfo> pointsToSymbol, List<Point3d> punkterMesh, int minAr, List<string> boreMetoder, string sosiFilePath, string sosiDagenFilePath)
+
+        public static void ValidateInput(List<PunktInfo> pointsToSymbol, List<Point3d> punkterMesh, int minAr, string kof, string sosiFilePath, string sosiDagenFilePath)
         {
        
 
             // Sjekker om 'minÅr' er et gyldig år
             if (minAr <= 0)
             {
-                throw new InvalidOperationException("Feil: 'minÅr' må være et positivt tall og representere et gyldig år.");
+                Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Minimums grensen for År er ikke gyldig");
+                return;
             }
 
             // Sjekker om minst en av filstiene ikke er tom
-            if (string.IsNullOrWhiteSpace(sosiFilePath) && string.IsNullOrWhiteSpace(sosiDagenFilePath))
+            if (string.IsNullOrWhiteSpace(sosiFilePath) && string.IsNullOrWhiteSpace(sosiDagenFilePath) && string.IsNullOrWhiteSpace(kof))
             {
-                throw new InvalidOperationException("Feil: Minst en av filstiene 'sosiFilePath' eller 'sosiDagenFilePath' må inneholde en gyldig sti.");
+                Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Ingen gyldige filstier er lastet opp");
+                return;
             }
         }
 

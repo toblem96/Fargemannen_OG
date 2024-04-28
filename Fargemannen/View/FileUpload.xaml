@@ -32,6 +32,7 @@
         <Button Content="Last opp KOF" Command="{Binding UploadKofCommand}" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5"/>
         <TextBox Text="{Binding DisplayKofFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="2" Grid.Column="1" Margin="5" Padding="3"/>
 
+
         <!-- TOT File Upload -->
         <Button Content="Last opp TOT" Command="{Binding UploadTotCommand}" Grid.Row="3" Grid.Column="0" Margin="5" Padding="5" Height="30" VerticalAlignment="Top"/>
         <ListBox ItemsSource="{Binding TotFilePaths}"
@@ -39,7 +40,7 @@
          ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="NoWrap"/>
+                    <TextBlock Text="{Binding Value}" TextWrapping="NoWrap"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

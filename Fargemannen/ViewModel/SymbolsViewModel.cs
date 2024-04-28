@@ -30,14 +30,14 @@ namespace Fargemannen.ViewModel
         private Color _minDrillingSymbolColor = Colors.Black;
         private double _rotation = 0;
         private double _scale = 1;
-        private bool _usePDFProject;
+        private bool _usePDFProject = true;
         private bool _useCaseProject;
         private bool _useCustomProject;
         private string _customProjectName;
         private string _projectType;
 
         private bool _useSOSINumber;
-        private bool _usePDFNumber;
+        private bool _usePDFNumber = true;
         private string _nummerType;
 
 
@@ -147,7 +147,7 @@ namespace Fargemannen.ViewModel
             else if (UseCustomProject)
                 ProjectType = CustomProjectName;
             else
-                ProjectType = null;  // Reset to null if no project type is selected
+                ProjectType = "PDF-nummer";  // Reset to null if no project type is selected
         }
        
         public bool UseSOSINumber
@@ -341,9 +341,10 @@ namespace Fargemannen.ViewModel
 
     private SymbolsViewModel()
     {
-        
-        
-        SonderingTypes = new ObservableCollection<SonderingType>
+            _usePDFProject = true; // Set PDF Project as the default type on initialization
+            UpdateProjectType();
+
+            SonderingTypes = new ObservableCollection<SonderingType>
         {
             new SonderingType { Name = "Totalsondering", IsChecked = true },
             new SonderingType { Name = "Dreietrykksondering", IsChecked = false },
@@ -382,7 +383,7 @@ namespace Fargemannen.ViewModel
 
         SymbolModel.PrintValgtBoring(pointsToSymbol, selectedTypes);
            
-            SymbolModel.test(pointsToSymbol, selectedTypes, MinDrillingDepth, NormalSymbolColor, minDrillingSymbolColor);
+        SymbolModel.test(pointsToSymbol, selectedTypes, MinDrillingDepth, NormalSymbolColor, minDrillingSymbolColor);
          
         }
 
