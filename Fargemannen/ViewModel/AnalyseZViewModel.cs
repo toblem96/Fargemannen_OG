@@ -189,6 +189,7 @@ namespace Fargemannen.ViewModel
         public ICommand KjørFargekartCommand { get; private set; }
 
         public ICommand LagBergmodellCommand { get; private set; }
+        public ICommand KjørLegendZCommand { get; private set; }
 
 
         public AnalyseZViewModel()
@@ -207,6 +208,7 @@ namespace Fargemannen.ViewModel
             ChooseColorCommand = new RelayCommand<Intervall>(ChooseColor);
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
             KjørFargekartCommand = new RelayCommand(LagFargekart);
+            KjørLegendZCommand = new RelayCommand(LagLegend);
 
             UpdateIntervalsAndCalculatePercentages();
 
@@ -220,15 +222,22 @@ namespace Fargemannen.ViewModel
             // Ny metode for å re-regne intervallene
 
 
-            IntervallerZ.Add(new IntervallZ { Navn = "Intervall_1", StartVerdi = 0, SluttVerdi = 10, Farge = "#1f7f00" });
-            IntervallerZ.Add(new IntervallZ { Navn = "Intervall_2", StartVerdi = 11, SluttVerdi = 20, Farge = "#00ff00" });
-            IntervallerZ.Add(new IntervallZ { Navn = "Intervall_3", StartVerdi = 11, SluttVerdi = 20, Farge = "#ffff00" });
-            IntervallerZ.Add(new IntervallZ { Navn = "Intervall_4", StartVerdi = 11, SluttVerdi = 20, Farge = "#ffbf00" });
-            IntervallerZ.Add(new IntervallZ { Navn = "Intervall_5", StartVerdi = 11, SluttVerdi = 20, Farge = "#ff3f00" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_1", StartVerdi = 0, SluttVerdi = 10, Farge = "#f7e7b8" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_2", StartVerdi = 11, SluttVerdi = 20, Farge = "#e5cb97" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_3", StartVerdi = 11, SluttVerdi = 20, Farge = "#d1ad79" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_4", StartVerdi = 11, SluttVerdi = 20, Farge = "#ac7749" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_5", StartVerdi = 11, SluttVerdi = 20, Farge = "#995f39" });
 
 
 
 
+        }
+        public void LagLegend()
+        {
+            var intervallListeZ = AnalyseZViewModel.Instance.GetIntervallListe();
+
+            LegdenModel legdenModel = new LegdenModel();
+           legdenModel.VelgFirkantZ(intervallListeZ);
         }
 
         private void UpdateLayerTransparency(int transparencyPercent)
@@ -289,6 +298,11 @@ namespace Fargemannen.ViewModel
 
             MinVerdiZ = Fargemannen.Model.AnalyseZModel.minVerdiZ;
             MaxVerdiZ = Fargemannen.Model.AnalyseZModel.maxVerdiZ;
+
+            if(MinVerdiZ < 0)
+            {
+                MinVerdiZ = 0;
+            }
         }
         public void RecalculateTotalPercentage()
         {
@@ -297,7 +311,9 @@ namespace Fargemannen.ViewModel
         }
         private void UpdateIntervalsAndCalculatePercentages()
         {
-            var lengdeVerdier = Fargemannen.Model.AnalyseZModel.VerdierZ;
+            // Filtrer ut -999 verdier fra VerdierZ
+            var lengdeVerdier = Fargemannen.Model.AnalyseZModel.VerdierZ.Where(v => v != -999).ToList();
+
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
                 foreach (var intervall in IntervallerZ)
@@ -307,7 +323,7 @@ namespace Fargemannen.ViewModel
                 return;
             }
 
-            double minVerdi = 0; // Starter på 0
+            double minVerdi = lengdeVerdier.Min(); // Oppdaterer minVerdi til å være minimum av gyldige verdier
             double maxVerdi = lengdeVerdier.Max();
             double totalRange = maxVerdi - minVerdi + 1; // +1 for å inkludere siste verdi i intervall
             double intervallStørrelse = Math.Floor(totalRange / IntervallerZ.Count);
@@ -569,10 +585,12 @@ namespace Fargemannen.ViewModel
 
         private void CalculateAndUpdatePercentage()
         {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
+            // Fjern alle verdier som er -999 fra datasettet før beregning
+            var lengdeVerdier = Fargemannen.Model.AnalyseZModel.VerdierZ.Where(v => v != -999).ToList();
+
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
-                Prosent = 0;
+                Prosent = 0; // Setter prosent til 0 hvis ingen gyldige verdier finnes
             }
             else
             {
@@ -580,8 +598,6 @@ namespace Fargemannen.ViewModel
                 int countInInterval = lengdeVerdier.Count(x => x >= StartVerdi && x < SluttVerdi + 0.1);
                 Prosent = (double)countInInterval / totalLengder * 100;
             }
-
-
         }
         private static System.Drawing.Color ConvertHexToDrawingColor(string hexColor)
         {

@@ -375,8 +375,8 @@ namespace Fargemannen.ViewModel
             try
             {
                 // Spor bruk av knappen
-                telemetryClient.TrackEvent("Knapp generer Symbol");
-
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Knapp generer Symbol");
+               
                 var selectedTypes = SonderingTypes.Where(x => x.IsChecked).Select(x => x.Name).ToList();
 
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -387,7 +387,7 @@ namespace Fargemannen.ViewModel
 
                 ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypes, NummerType, ProjectType);
 
-                telemetryClient.TrackMetric("Number of Symbols Generated", pointsToSymbol.Count);
+                Fargemannen.ApplicationInsights.AppInsights.TrackMetric("Number of Symbols Generated", pointsToSymbol.Count);
 
                 SymbolModel.PrintValgtBoring(pointsToSymbol, selectedTypes);
                 SymbolModel.test(pointsToSymbol, selectedTypes, MinDrillingDepth, NormalSymbolColor, minDrillingSymbolColor);
@@ -396,14 +396,16 @@ namespace Fargemannen.ViewModel
             catch (Exception ex)
             {
                 var properties = new Dictionary<string, string>
-        {
-            { "Error Message", ex.Message },
-            { "StackTrace", ex.StackTrace }
-        };
-                telemetryClient.TrackEvent("Application crash", properties);
+    {
+        { "Error Message", ex.Message },
+        { "StackTrace", ex.StackTrace },
+                    { "Function Name", nameof(ExecuteGenerateSymbols) }
+    };
+                Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
 
-                // Her kan du også vurdere å logge mer detaljert informasjon om tilstanden i applikasjonen
-                // eller til og med sende en e-post til en administrator hvis det er nødvendig.
+                //
+
+
             }
         }
 

@@ -416,6 +416,9 @@ namespace Fargemannen.Model
                 {
                     LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
                     BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
+                    BlockTable bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+
+                    ClearLayers(acTrans, lt, bt, intervaller);
 
                     int processedItems = 0;
                     try
@@ -493,7 +496,7 @@ namespace Fargemannen.Model
             dot.MoveToBottom(new ObjectIdCollection(new ObjectId[] { hatch.ObjectId }));
         }
 
-        private static void ClearLayers(Transaction acTrans, LayerTable lt, BlockTable btr, List<Fargemannen.ViewModel.Intervall> intervaller)
+        private static void ClearLayers(Transaction acTrans, LayerTable lt, BlockTable btr, List<Fargemannen.ViewModel.IntervallZ> intervaller)
         {
             foreach (var intervall in intervaller)
             {

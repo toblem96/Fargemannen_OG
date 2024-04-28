@@ -169,7 +169,7 @@ namespace Fargemannen.Model
             }
         }
 
-        public void VelgFirkantZ()
+        public void VelgFirkantZ(List<ViewModel.IntervallZ> Intervaller)
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
@@ -187,11 +187,11 @@ namespace Fargemannen.Model
             }
 
             // Fortsett med å håndtere den valgte polylinen
-            HandleSelectedPolylineZ(per.ObjectId);
+            HandleSelectedPolylineZ(per.ObjectId, Intervaller);
         }
 
 
-        private void HandleSelectedPolylineZ(ObjectId polylineId)
+        private void HandleSelectedPolylineZ(ObjectId polylineId, List<ViewModel.IntervallZ> Intervaller)
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
@@ -214,9 +214,8 @@ namespace Fargemannen.Model
                     return;
                 }
                 LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
-                List<Intervall> activeIntervals = Intervall.intervallListeZ
-                    .Where(i => !string.IsNullOrEmpty(i.LagNavn) && lt.Has(i.LagNavn))
-                    .ToList();
+                
+                   
 
                 double minX = Double.MaxValue;
                 double maxX = Double.MinValue;
@@ -235,14 +234,14 @@ namespace Fargemannen.Model
 
                 double totalWidth = maxX - minX;
                 double totalHeight = maxY - minY;
-                double rowHeight = totalHeight / activeIntervals.Count;  // Adjusted to use count of intervals list
+                double rowHeight = totalHeight / Intervaller.Count;  // Adjusted to use count of intervals list
 
 
                 double rowWidth = totalWidth; // The row width is the same as the total width of the polyline
 
-                for (int i = 0; i < activeIntervals.Count; i++)
+                for (int i = 0; i < Intervaller.Count; i++)
                 {
-                    Intervall interval = activeIntervals[activeIntervals.Count - 1 - i];
+                    IntervallZ interval = Intervaller[Intervaller.Count - 1 - i];
                     Point3d rectStart = new Point3d(minX, minY + rowHeight * i, 0);
                     Point3d rectEnd = new Point3d(maxX, minY + rowHeight * (i + 1), 0);
 
@@ -254,7 +253,7 @@ namespace Fargemannen.Model
         }
 
 
-        private void CreateColoredRectangleZ(Document doc, Database db, Transaction tr, Point3d start, Point3d end, Intervall interval)
+        private void CreateColoredRectangleZ(Document doc, Database db, Transaction tr, Point3d start, Point3d end, IntervallZ interval)
         {
             BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
 
@@ -275,11 +274,11 @@ namespace Fargemannen.Model
             hatch.Associative = true;
             hatch.AppendLoop(HatchLoopTypes.Outermost, new ObjectIdCollection(new ObjectId[] { rectId }));
             hatch.EvaluateHatch(true);
-            hatch.Layer = interval.LagNavn;  // Ensure the layer is set correctly
+            hatch.Layer = interval.Navn;  // Ensure the layer is set correctly
             hatch.Transparency = new Transparency((byte)255);  // Set transparency of the hatch to 0 (fully opaque)
         }
 
-        private void InsertIntervalTextZ(Document doc, Transaction tr, Point3d start, Point3d end, Intervall interval)
+        private void InsertIntervalTextZ(Document doc, Transaction tr, Point3d start, Point3d end, IntervallZ interval)
         {
             if (doc == null || tr == null)
             {
@@ -311,7 +310,7 @@ namespace Fargemannen.Model
                 DBText text = new DBText();
                 text.Position = new Point3d((start.X + end.X) / 2, (start.Y + end.Y) / 2, 0);
                 text.Height = textHeight;
-                text.TextString = $"{interval.Start}m - {interval.Slutt}m";
+                text.TextString = $"{interval.StartVerdi}m - {interval.SluttVerdi}m";
                 text.HorizontalMode = TextHorizontalMode.TextCenter;
                 text.VerticalMode = TextVerticalMode.TextVerticalMid;
                 text.AlignmentPoint = text.Position;

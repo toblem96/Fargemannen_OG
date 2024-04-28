@@ -84,6 +84,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <!-- Fortsett med RowDefinition for hvert element -->
                     </Grid.RowDefinitions>
 
@@ -154,6 +156,7 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
              Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                     Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
+                    <Button Content="Lag Legend" Grid.Column="0" Grid.Row="4" Command="{Binding KjørLegendZCommand}"/>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -24,9 +24,14 @@ namespace Fargemannen.ApplicationInsights
             TelemetryClient.TrackEvent(eventName);
         }
 
-        public static void TrackException(Exception exception)
+        public static void TrackMetric(string metricName, double value)
         {
-            TelemetryClient.TrackException(exception);
+            TelemetryClient.TrackMetric(metricName, value);
+        }
+
+        public static void TrackException(Exception exception, IDictionary<string, string> properties)
+        {
+            TelemetryClient.TrackException(exception, properties);
         }
     }
 }
