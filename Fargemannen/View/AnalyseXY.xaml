@@ -66,11 +66,14 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        
                         <ColumnDefinition Width="20"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
                         <!-- Legg til nok RowDefinition for antall intervaller du har -->
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -88,6 +91,7 @@
                                         <ColumnDefinition Width="20"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -145,8 +149,10 @@
                      Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                             Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
+                    <Button Content="Lag Legend" Grid.Column="0" Grid.Row="4" Command="{Binding KjørLegendCommand}"/>
                 </Grid>
             </TabItem>
+           
         </TabControl>
     </Grid>
 </UserControl>

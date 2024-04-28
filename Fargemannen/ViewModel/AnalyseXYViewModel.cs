@@ -155,7 +155,8 @@ namespace Fargemannen.ViewModel
         public ICommand ChooseColorCommand { get; private set; }
         public ICommand OppdaterTotalProsetCommand { get; private set; }
         public ICommand KjørFargekartCommand { get; private set; }
-        
+        public ICommand KjørLegendCommand { get; private set; }
+
 
         public AnalyseXYViewModel()
         {
@@ -180,7 +181,7 @@ namespace Fargemannen.ViewModel
             ChooseColorCommand = new RelayCommand<Intervall>(ChooseColor);
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
             KjørFargekartCommand = new RelayCommand(LagFargekart);
-
+            KjørLegendCommand = new RelayCommand(LagLegend);
             UpdateIntervalsAndCalculatePercentages();
 
             UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
@@ -200,6 +201,14 @@ namespace Fargemannen.ViewModel
             Intervaller.Add(new Intervall { Navn = "Intervall_5", StartVerdi = 11, SluttVerdi = 20, Farge = "#ff3f00" });
 
 
+        }
+
+        public void LagLegend() 
+        {
+            var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
+
+            LegdenModel legdenModel = new LegdenModel();
+            legdenModel.VelgFirkant(intervallListe);
         }
         private void UpdateLayerTransparency(int transparencyPercent)
         {
@@ -479,31 +488,30 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
+                   //UpdateLayerColor(Navn, Farge);
+                }
+            }
+        }
 
-                    if (!string.IsNullOrEmpty(Navn))
+        private void UpdateLayerColor(string layerName, string colorHex)
+        {
+            if (!string.IsNullOrEmpty(layerName))
+            {
+                Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database acCurDb = acDoc.Database;
+
+                using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                {
+                    using (acDoc.LockDocument())
                     {
-                        Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                        Database acCurDb = acDoc.Database;
-
-                        using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                        LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
+                        if (lt.Has(layerName))  // Sjekk om laget eksisterer
                         {
-                            using (acDoc.LockDocument())
-                            {
-                                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
-
-                                if (lt.Has(Navn))  // Sjekk om laget eksisterer
-                                {
-                                    LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(lt[Navn], OpenMode.ForWrite);
-                                    ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(Farge));
-                                    OnPropertyChanged(nameof(Brush));
-                                    acTrans.Commit();  // Commit kun hvis endringer er gjort
-                                    acDoc.Editor.Regen();
-                                }
-                                else
-                                {
-                                
-                                }
-                            }
+                            LayerTableRecord ltr = (LayerTableRecord)acTrans.GetObject(lt[layerName], OpenMode.ForWrite);
+                            ltr.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(colorHex));
+                            OnPropertyChanged(nameof(Brush));
+                            acTrans.Commit();  // Commit kun hvis endringer er gjort
+                            acDoc.Editor.Regen();
                         }
                     }
                 }

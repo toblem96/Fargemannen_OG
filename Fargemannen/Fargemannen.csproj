@@ -233,6 +233,7 @@
     <Compile Include="MakeringAvBerg.cs" />
     <Compile Include="Model\AnalyseXYModel.cs" />
     <Compile Include="Model\AnalyseZModel.cs" />
+    <Compile Include="Model\LegdenModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />
     <Compile Include="Model\SymbolModel.cs" />
     <Compile Include="ProgressBar.cs">
