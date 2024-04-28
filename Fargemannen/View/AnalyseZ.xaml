@@ -19,6 +19,7 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/>
                     </Grid.ColumnDefinitions>
@@ -30,7 +31,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
-                        <RowDefinition Height="20" />
+                        <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
@@ -54,17 +55,17 @@
                         <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding RuteStørresle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <TextBlock Text="Navn på Terreng lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+                        <TextBlock Text="Navn på Terreng lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,40,0,10"/>
                         <TextBox Text="{Binding TerrengModellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Navn på Bergmodell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
 
                         <TextBox Text="{Binding BergmodellNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                         <TextBlock Text="Navn på lag for bergmodell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <Button Command="{Binding LagBergmodellCommand}" Content="Generer Bergmodell" Margin="0,10,0,0" />
+                        <Button Command="{Binding LagBergmodellCommand}" Content="Generer Bergmodell" Margin="0,10,0,0" Grid.Column="0" Grid.Row="2" Height="40"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Grid.Row="7" Content="Velg Analyseområde" Command="{Binding VelgAnalyseZCommand}"  Margin="0,3,0,0" />
+                    <Button Grid.Column="1" Grid.Row="7" Content="Velg Analyseområde" Command="{Binding VelgAnalyseZCommand}"  Margin="0,3,0,0" Height="40"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Sett Intervaller" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
@@ -146,7 +147,7 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
                         <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130"/>
 
                     </StackPanel>
-                    <TextBlock Text="Gjennomsiktighet" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"
+                    <TextBlock Text="0         Gjennomsiktighet           100" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"
                        HorizontalAlignment="Center" Margin="0,20,0,15"/>
                     <Slider Value="{Binding SliderValue}"
              Minimum="0" 
@@ -156,7 +157,7 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
              Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                     Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
-                    <Button Content="Lag Legend" Grid.Column="0" Grid.Row="4" Command="{Binding KjørLegendZCommand}"/>
+                    <Button Content="Lag Legend" Grid.Column="2" Grid.Row="3" Command="{Binding KjørLegendZCommand}" Margin="0,25,0,0" Width="120" Height="40"/>
                 </Grid>
             </TabItem>
         </TabControl>

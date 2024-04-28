@@ -110,6 +110,22 @@ namespace Fargemannen.ViewModel
                 }
             }
         }
+        private string _BergmodellLagNavn = "Bergmodell";
+
+        public string BergmodellLagNavn
+        {
+            get => _BergmodellLagNavn;
+            set
+            {
+                if (value != _BergmodellLagNavn)
+                {
+                    _BergmodellLagNavn = value;
+                    OnPropertyChanged(nameof(BergmodellLagNavn));
+                }
+            }
+        }
+
+
         private int _sliderValue = 50; // Startverdi som et eksempel
 
         public int SliderValue
@@ -156,6 +172,7 @@ namespace Fargemannen.ViewModel
         public ICommand OppdaterTotalProsetCommand { get; private set; }
         public ICommand KjørFargekartCommand { get; private set; }
         public ICommand KjørLegendCommand { get; private set; }
+        public ICommand KjørDukCommand { get; private set; }
 
 
         public AnalyseXYViewModel()
@@ -182,6 +199,7 @@ namespace Fargemannen.ViewModel
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
             KjørFargekartCommand = new RelayCommand(LagFargekart);
             KjørLegendCommand = new RelayCommand(LagLegend);
+            KjørDukCommand = new RelayCommand(KjørDuk);
             UpdateIntervalsAndCalculatePercentages();
 
             UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
@@ -202,7 +220,28 @@ namespace Fargemannen.ViewModel
 
 
         }
+        public void KjørDuk() 
+        {
+            var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
+            var selectedTypesXY = SonderingTypesXY.Where(x => x.IsChecked).Select(x => x.Name).ToList();
 
+
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            List<PunktInfo> pointsToSymbol = new List<PunktInfo>();
+            List<Point3d> punkterMesh = new List<Point3d>();
+            string NummerType = "";
+            string ProjectType = "";
+
+
+
+            ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesXY, NummerType, ProjectType);
+
+            DukXYModel Duk = new DukXYModel();
+            Duk.KjørDukPåXY(pointsToSymbol, intervallListe, BergmodellLagNavn);
+
+        }
         public void LagLegend() 
         {
             var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();

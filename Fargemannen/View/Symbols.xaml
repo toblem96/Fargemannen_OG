@@ -18,7 +18,8 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="20"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -67,11 +68,11 @@
                         <RadioButton Content="PDF-nummer" GroupName="ProjectType" IsChecked="{Binding UsePDFProject, Mode=TwoWay}"/>
                         <RadioButton Content="Saksnummer" GroupName="ProjectType" IsChecked="{Binding UseCaseProject, Mode=TwoWay}"/>
                         <RadioButton Content="Egendefinert:" GroupName="ProjectType" IsChecked="{Binding UseCustomProject, Mode=TwoWay}"/>
-                        <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="20,0,0,10"/>
+                        <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="0,0,0,0" HorizontalAlignment="Left"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="4" Grid.Row="4" Orientation="Vertical">
-                        <TextBlock Text="Borenummer" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
+                    <StackPanel Grid.Column="5" Grid.Row="4" Orientation="Vertical">
+                        <TextBlock Text="Borenummer:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
 
                         <RadioButton Content="SOSI nummer" GroupName="NummerType" IsChecked="{Binding UseSOSINumber, Mode=TwoWay}"/>
                         <RadioButton Content="PDF nummer" GroupName="NummerType" IsChecked="{Binding UsePDFNumber, Mode=TwoWay}"/>

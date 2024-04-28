@@ -145,6 +145,7 @@ namespace Fargemannen.ViewModel
                 }
             }
         }
+
         public double MaxVerdiZ
         {
             get => _maxVerdiZ;

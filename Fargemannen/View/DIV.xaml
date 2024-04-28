@@ -9,7 +9,7 @@
              d:DesignHeight="700" d:DesignWidth="700">
     <Grid DataContext="{Binding Source={x:Static vm:DIVVeiwModel.Instance}}">
         <TabControl>
-            <TabItem Header="Velg Analyse Omeråde">
+            <TabItem Header="Rapport">
                 <Grid Background="White" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20"/>
@@ -39,7 +39,7 @@
                         <RowDefinition Height="20" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="1" Grid.Row="1" FontSize="20" FontFamily="Artifakt Element Heavy" Text="AnalyseXY" Grid.ColumnSpan="2"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" FontSize="20" FontFamily="Artifakt Element Heavy" Text="Rapport" Grid.ColumnSpan="2"/>
                     <TextBlock Grid.Column="1" Grid.Row="3" FontSize="15" FontFamily="Artifakt Element Medium" Text="Sonderingstyper:" Grid.ColumnSpan="2"/>
                     <ListBox Grid.Column="1" Grid.Row="4" ItemsSource="{Binding SonderingTypesXL}" Grid.ColumnSpan="2" Margin="0,0,0,17">
                         <ListBox.ItemTemplate>
@@ -63,7 +63,7 @@
                     <Button Content="Lag EXCL rapport" Command="{Binding kjørRapport}" Grid.Column="1" Grid.Row="5"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Sett Intervaller" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
+            <TabItem Header="CS" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

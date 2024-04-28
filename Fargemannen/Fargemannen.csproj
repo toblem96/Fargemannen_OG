@@ -233,6 +233,7 @@
     <Compile Include="MakeringAvBerg.cs" />
     <Compile Include="Model\AnalyseXYModel.cs" />
     <Compile Include="Model\AnalyseZModel.cs" />
+    <Compile Include="Model\DukXYModel.cs" />
     <Compile Include="Model\EXCEL.cs" />
     <Compile Include="Model\LegdenModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />
