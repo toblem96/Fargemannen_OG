@@ -30,14 +30,14 @@ namespace Fargemannen.ViewModel
         private Color _minDrillingSymbolColor = Colors.Black;
         private double _rotation = 0;
         private double _scale = 1;
-        private bool _usePDFProject = true;
+        private bool _usePDFProject;
         private bool _useCaseProject;
         private bool _useCustomProject;
         private string _customProjectName;
         private string _projectType;
 
         private bool _useSOSINumber;
-        private bool _usePDFNumber = true;
+        private bool _usePDFNumber;
         private string _nummerType;
 
 
@@ -61,6 +61,7 @@ namespace Fargemannen.ViewModel
             set
             {
                 SetProjectType(ref _usePDFProject, value, "PDF-nummer");
+                UpdateProjectType();
             }
         }
 
@@ -70,6 +71,7 @@ namespace Fargemannen.ViewModel
             set
             {
                 SetProjectType(ref _useCaseProject, value, "Saksnummer");
+                UpdateProjectType();
             }
         }
 
@@ -79,6 +81,7 @@ namespace Fargemannen.ViewModel
             set
             {
                 SetProjectType(ref _useCustomProject, value, CustomProjectName);
+                UpdateProjectType();
             }
         }
 

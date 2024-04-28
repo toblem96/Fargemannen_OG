@@ -84,7 +84,7 @@ namespace Fargemannen.ViewModel
                     return ""; // Returnerer en tom streng hvis stien er null eller tom
                 }
 
-                var parts = _fullSosiFilePath.Split('\\');
+                var parts = _fullsosidagenFilePath.Split('\\');
                 return parts.Length > 1 ? string.Join("\\", parts.Skip(parts.Length - 2)) : _fullsosidagenFilePath;
             }
         }

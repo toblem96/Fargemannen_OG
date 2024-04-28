@@ -67,6 +67,10 @@ namespace Fargemannen.Model
                 {
                     rapportID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
                 }
+                if ((rapportID == "PDF-nummer") || (rapportID == "Saksnummer"))
+                {
+                    rapportID = "";
+                }
 
                 // Andre feltbehandlinger
                 if (line.Contains("..FJELLKOTE"))
@@ -166,11 +170,10 @@ namespace Fargemannen.Model
             }
 
             string[] lines = data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
             double x = 0, y = 0, z = 0;
             bool nextLineHasCoordinates = false;
-            int currentYear = 0;
-            string MainID = "", currentPunktID = "X", currentGBUMethod = "";
+            int currentYear = 10;
+            string MainID = "", currentPunktID = "", currentGBUMethod = "Fjellidagen";
             double terrengkvote = 0.0, bor_fjell = 0.0, bor_løs = 0.0;
             string rapportID = ProsjektType;
 
@@ -178,26 +181,34 @@ namespace Fargemannen.Model
             {
                 if (line.StartsWith(".PUNKT"))
                 {
-                    string punktIDWithColon = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
-                    MainID = punktIDWithColon.TrimEnd(':');
-                    if (NummerType == "SOSINummer")
-                    {
-                        currentPunktID = MainID;
-                    }
+                    // Resett alle variabler for nytt punkt, inkludert rapportID satt til ProsjektType
+                    rapportID = ProsjektType;
+                    MainID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last().TrimEnd(':') + ".FJELL";
+                    currentPunktID = (NummerType == "SOSINummer") ? MainID : "";
+                    terrengkvote = 0.0;
+                    bor_fjell = 0.0;
+                    bor_løs = 0.0;
+                    currentYear = 10;
+                    nextLineHasCoordinates = false;
                 }
                 else if (line.StartsWith("..PDF_BORENUMMER") && NummerType != "SOSINummer")
                 {
-                    currentPunktID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
+                    currentPunktID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last() + ".FJELL";
                 }
 
-                if (ProsjektType == "PDF-nummer" && line.StartsWith("..PDF_KOMMUNE_INTERNT_FILNAVN"))
+                if ((ProsjektType == "PDF-nummer") && line.StartsWith("..PDF_KOMMUNE_INTERNT_FILNAVN"))
+                {
+                    rapportID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last() ;
+                }
+                else if ((ProsjektType == "Saksnummer") && line.StartsWith("..ID_SAKSNUMMER"))
                 {
                     rapportID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
                 }
-                else if (ProsjektType == "Saksnummer" && line.StartsWith("..ID_SAKSNUMMER"))
+                if ((rapportID == "PDF-nummer") || (rapportID == "Saksnummer"))
                 {
-                    rapportID = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
+                    rapportID = "";
                 }
+
 
                 if (line.Contains("..FJELLKOTE"))
                 {
@@ -238,8 +249,9 @@ namespace Fargemannen.Model
                     var coords = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (coords.Length >= 2 && double.TryParse(coords[0], out y) && double.TryParse(coords[1], out x))
                     {
-                        x /= 100; // Konvertering hvis nødvendig
-                        y /= 100; // Konvertering hvis nødvendig
+                        x /= 100; // Conversion if necessary
+                        y /= 100; // Conversion if necessary
+                        nextLineHasCoordinates = false; // Reset after coordinates are saved
 
                         if (currentYear >= minAr && borremetoderSymbol.Contains(currentGBUMethod))
                         {
@@ -260,11 +272,11 @@ namespace Fargemannen.Model
 
                             pointsToSymbol.Add(info);
                         }
-                        nextLineHasCoordinates = false; // Resetter etter koordinater er lagret
                     }
                 }
             }
         }
+
 
 
         //TOT OG KOF
@@ -347,9 +359,6 @@ namespace Fargemannen.Model
             }
         }
 
-
-
-
         public static void PDFpross()
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -357,62 +366,78 @@ namespace Fargemannen.Model
 
             FileUploadViewModel fileViewModel = FileUploadViewModel.Instance;
             string sosiFilePath = fileViewModel.SosiFilePath;
+            string sosiDagenFilePath = fileViewModel.SosidagenFilePath;
 
-            string data;
-            try
+            // Les og prosesser hver fil
+            ReadAndProcessFile(sosiFilePath, false);
+            ReadAndProcessFile(sosiDagenFilePath, true);
+
+            // Hjelpemetode for å lese og prosessere en gitt filsti
+            void ReadAndProcessFile(string filePath, bool isDagenFile)
             {
-                data = File.ReadAllText(sosiFilePath);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Error reading file: " + e.Message, "File Read Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            string[] lines = data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-            string currentPunktID = "", currentPdfRapportNummer = "", currentPrøvePath = "";
-
-            foreach (var line in lines)
-            {
-                if (line.StartsWith(".PUNKT"))
+                string data;
+                try
                 {
-                    // Reset variables for each new punkt
-                    currentPunktID = "";
-                    currentPdfRapportNummer = "";
-                    currentPrøvePath = "";
-
-                    string punktIDWithColon = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
-                    currentPunktID = punktIDWithColon.TrimEnd(':');
+                    data = File.ReadAllText(filePath);
                 }
-                else if (line.StartsWith("..PDF_KOMMUNE_INTERNT_FILNAVN") && !string.IsNullOrEmpty(currentPunktID))
+                catch (Exception e)
                 {
-                    currentPdfRapportNummer = line.Split(' ').Last();
-                }
-                else if (line.StartsWith("..PDF_URL_PRØVE") && !string.IsNullOrEmpty(currentPunktID))
-                {
-                    currentPrøvePath = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last().Trim();
-                    currentPrøvePath = Path.GetFileNameWithoutExtension(currentPrøvePath); // Retrieves the whole file name without extension
+                    MessageBox.Show("Error reading file: " + e.Message, "File Read Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
 
-                /*
-                if (!string.IsNullOrEmpty(currentPunktID) && !string.IsNullOrEmpty(currentPdfRapportNummer))
+                string[] lines = data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                string currentPunktID = "", currentPdfRapportNummer = "", currentPrøvePath = "";
+                bool hasValidPdfData = false;
+
+                foreach (var line in lines)
                 {
-                    if (!PunkterPerPdf.ContainsKey(currentPunktID))
+                    if (line.StartsWith(".PUNKT"))
                     {
-                        PunkterPerPdf[currentPunktID] = new Tuple<string, string>(currentPdfRapportNummer, currentPrøvePath);
-                    }
-                }
-                */  
-            }
+                        // Legg til gyldige data før reset hvis de er gyldige
+                        if (hasValidPdfData && !string.IsNullOrEmpty(currentPunktID) && !PunkterPerPdf.ContainsKey(currentPunktID))
+                        {
+                            PunkterPerPdf[currentPunktID] = new Tuple<string, string>(currentPdfRapportNummer, currentPrøvePath);
+                        }
+                        currentPunktID = "";
+                        currentPdfRapportNummer = "";
+                        currentPrøvePath = "";
+                        hasValidPdfData = false;  // Reset PDF data validity flag
 
-            //Print all key-value pairs (Punkt-ID and associated file numbers)
-            foreach (var item in PunkterPerPdf)
-            {
-                string melding = $"\nPunkt-ID: {item.Key}, Rapportnummer: {item.Value.Item1}, Prøvenummer: {item.Value.Item2}";
-                doc.Editor.WriteMessage(melding);
+                        string punktIDWithColon = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last();
+                        currentPunktID = punktIDWithColon.TrimEnd(':');
+
+                        // Legger til "_FJELL" hvis data er fra sosiDagenFilePath
+                        if (isDagenFile)
+                        {
+                            currentPunktID += ".FJELL";
+                        }
+                    }
+                    else if (line.StartsWith("..PDF_KOMMUNE_INTERNT_FILNAVN") && !string.IsNullOrEmpty(currentPunktID))
+                    {
+                        currentPdfRapportNummer = line.Split(' ').Last();
+                        hasValidPdfData = true;
+                    }
+                    else if (line.StartsWith("..PDF_URL_PRØVE") && !string.IsNullOrEmpty(currentPunktID))
+                    {
+                        currentPrøvePath = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last().Trim();
+                        currentPrøvePath = Path.GetFileNameWithoutExtension(currentPrøvePath);
+                        hasValidPdfData = true;
+                    }
+                 
+                }
+
+                // Add any remaining valid data
+                if (!string.IsNullOrEmpty(currentPunktID) && !PunkterPerPdf.ContainsKey(currentPunktID))
+                {
+                    PunkterPerPdf[currentPunktID] = new Tuple<string, string>(currentPdfRapportNummer, currentPrøvePath);
+                }
             }
         }
+
+
+
+
 
         public static void HentPunkter(List<PunktInfo> pointsToSymbol, List<Point3d> punkterMesh, int minAr, List<string> boreMetoder, string NummerType, string ProsjektType)
         {
@@ -426,6 +451,10 @@ namespace Fargemannen.Model
 
             try
             {
+                foreach (var metode in boreMetoder)
+                {
+                    ed.WriteMessage("\nBoremetode: " + metode);
+                }
                 ValidateInput(pointsToSymbol, punkterMesh, minAr, boreMetoder, sosiFilePath, sosiDagenFilePath);
                 // Hvis validering er vellykket, prosesser filer
                 ProcessSOSIFilesBor(minAr, boreMetoder, sosiFilePath, pointsToSymbol, punkterMesh, NummerType, ProsjektType);

@@ -163,7 +163,11 @@ namespace Fargemannen.Model
             var sonderingType = punkt.GBUMetode.ToLower();
 
             if (!blockRefs.ContainsKey(sonderingType))
-                throw new KeyNotFoundException($"Ingen blokkreferanse funnet for sonderingstypen '{sonderingType}'.");
+            {
+                sonderingType = "Enkel";
+            }
+                
+
 
             Point3d plasseringsPunkt = new Point3d(punkt.Punkt.X, punkt.Punkt.Y, punkt.Punkt.Z);
 
@@ -374,7 +378,7 @@ namespace Fargemannen.Model
                         {
                             layer.UpgradeOpen();
                             layer.Erase();
-                            ed.WriteMessage($"Layer {layer.Name} slettet.\n");
+                          
                         }
 
                     }
@@ -386,16 +390,16 @@ namespace Fargemannen.Model
                         {
                             block.UpgradeOpen();
                             block.Erase();
-                            ed.WriteMessage($"Block {block.Name} slettet.\n");
+                           
                         }
 
                     }
 
                     tr.Commit();
-                    ed.WriteMessage("\nAlle blokker og lag slettet.\n");
+                   
                 }
 
-                ed.WriteMessage("\nAlle blokker og lag slettet.\n");
+                
             }
         }
     }
