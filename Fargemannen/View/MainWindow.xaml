@@ -21,6 +21,9 @@
             <TabItem Header="AnalyseZ">
                 <local:AnalyseZ />
             </TabItem>
+            <TabItem Header="DIV">
+                <local:DIV />
+            </TabItem>
 
         </TabControl>
     </Grid>

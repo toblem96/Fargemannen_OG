@@ -233,6 +233,7 @@
     <Compile Include="MakeringAvBerg.cs" />
     <Compile Include="Model\AnalyseXYModel.cs" />
     <Compile Include="Model\AnalyseZModel.cs" />
+    <Compile Include="Model\EXCEL.cs" />
     <Compile Include="Model\LegdenModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />
     <Compile Include="Model\SymbolModel.cs" />
@@ -253,6 +254,7 @@
     <Compile Include="Symboler\SymbolStyle.cs" />
     <Compile Include="ViewModel\AnalyseXYViewModel.cs" />
     <Compile Include="ViewModel\AnalyseZViewModel.cs" />
+    <Compile Include="ViewModel\DIVVeiwModel.cs" />
     <Compile Include="ViewModel\FileUploadViewModel.cs" />
     <Compile Include="ViewModel\SymbolsViewModel.cs" />
     <Compile Include="View\AnalyseXY.xaml.cs">
@@ -260,6 +262,9 @@
     </Compile>
     <Compile Include="View\AnalyseZ.xaml.cs">
       <DependentUpon>AnalyseZ.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DIV.xaml.cs">
+      <DependentUpon>DIV.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\FileUpload.xaml.cs">
       <DependentUpon>FileUpload.xaml</DependentUpon>
@@ -330,6 +335,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AnalyseZ.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\DIV.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
