@@ -395,16 +395,18 @@ namespace Fargemannen.Model
                     currentPrøvePath = Path.GetFileNameWithoutExtension(currentPrøvePath); // Retrieves the whole file name without extension
                 }
 
-                if (!string.IsNullOrEmpty(currentPunktID) && !string.IsNullOrEmpty(currentPdfRapportNummer) && !string.IsNullOrEmpty(currentPrøvePath))
+                /*
+                if (!string.IsNullOrEmpty(currentPunktID) && !string.IsNullOrEmpty(currentPdfRapportNummer))
                 {
                     if (!PunkterPerPdf.ContainsKey(currentPunktID))
                     {
                         PunkterPerPdf[currentPunktID] = new Tuple<string, string>(currentPdfRapportNummer, currentPrøvePath);
                     }
                 }
+                */  
             }
 
-            // Print all key-value pairs (Punkt-ID and associated file numbers)
+            //Print all key-value pairs (Punkt-ID and associated file numbers)
             foreach (var item in PunkterPerPdf)
             {
                 string melding = $"\nPunkt-ID: {item.Key}, Rapportnummer: {item.Value.Item1}, Prøvenummer: {item.Value.Item2}";

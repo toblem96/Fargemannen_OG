@@ -124,13 +124,20 @@ namespace Fargemannen
 
 
 
-
+        
 
 
         [CommandMethod("PDFBRILLER")]
         public void HentBlockNavn()
         {
             Fargemannen.ApplicationInsights.AppInsights.TrackEvent("HentBlockNavn Used");
+
+
+            if (FileUploadViewModel.Instance.ReportFiles.Count == 0 && FileUploadViewModel.Instance.SampleResultFiles.Count == 0)
+            {
+                Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Ingen PDF-mapper er lagt til");
+                return;
+            }
 
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;

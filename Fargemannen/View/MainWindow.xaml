@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:Fargemannen.View"
         xmlns:vm="clr-namespace:Fargemannen.ViewModel"
         
-        Title="Fargemannen" Height="450" Width="800">
+        Title="Fargemannen" Height="700" Width="700">
 
     <Grid>
         

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Fargemannen.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="700">
     <Grid DataContext="{Binding Source={x:Static local:FileUploadViewModel.Instance}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,35 +22,35 @@
 
         <!-- SOSI File Upload -->
         <Button Content="Last opp SOSI" Command="{Binding UploadSosiCommand}" Grid.Row="0" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding SosiFilePath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="5" Padding="3"/>
-
+        <TextBox Text="{Binding DisplaySosiFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="0" Grid.Column="1" Margin="5" Padding="3"/>
+       
         <!-- SOSIDAGEN File Upload -->
         <Button Content="Last opp SOSIDAGEN" Command="{Binding UploadSosidagenCommand}" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding SosidagenFilePath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" Margin="5" Padding="3"/>
+        <TextBox Text="{Binding DisplaySosidagenFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="1" Grid.Column="1" Margin="5" Padding="3"/>
 
         <!-- KOF File Upload -->
         <Button Content="Last opp KOF" Command="{Binding UploadKofCommand}" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding KofFilePath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" Margin="5" Padding="3"/>
+        <TextBox Text="{Binding DisplayKofFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="2" Grid.Column="1" Margin="5" Padding="3"/>
 
         <!-- TOT File Upload -->
         <Button Content="Last opp TOT" Command="{Binding UploadTotCommand}" Grid.Row="3" Grid.Column="0" Margin="5" Padding="5" Height="30" VerticalAlignment="Top"/>
-        <ListBox ItemsSource="{Binding TotFilePaths, UpdateSourceTrigger=PropertyChanged}"
+        <ListBox ItemsSource="{Binding TotFilePaths}"
          Grid.Row="3" Grid.Column="1" Margin="5" Height="60"
          ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="NoWrap" />
+                    <TextBlock Text="{Binding}" TextWrapping="NoWrap"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
         <!-- Report Folder Upload -->
         <Button Content="Last opp Rapport mappe" Command="{Binding UploadReportFolderCommand}" Grid.Row="4" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding ReportFolderPath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" Margin="5" Padding="3"/>
+        <TextBox Text="{Binding DisplayReportFolderPath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="4" Grid.Column="1" Margin="5" Padding="3"/>
 
         <!-- Sample Results Folder Upload -->
         <Button Content="Last opp Prøveresultat mappe" Command="{Binding UploadSampleResultsFolderCommand}" Grid.Row="5" Grid.Column="0" Margin="5" Padding="5"/>
-        <TextBox Text="{Binding SampleResultsFolderPath, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1" Margin="5" Padding="3"/>
+        <TextBox Text="{Binding DisplaySampleResultsFolderPath, UpdateSourceTrigger=PropertyChanged,  Mode=OneWay}" Grid.Row="5" Grid.Column="1" Margin="5" Padding="3"/>
     
     </Grid>
 </UserControl>

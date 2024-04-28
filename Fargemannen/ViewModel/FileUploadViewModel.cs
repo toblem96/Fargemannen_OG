@@ -14,16 +14,18 @@ using System.Runtime.CompilerServices;
 using GalaSoft.MvvmLight.Command;
 using System.Windows.Controls;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace Fargemannen.ViewModel
 {
     public class FileUploadViewModel : INotifyPropertyChanged
     {
         private static FileUploadViewModel instance;
-        private string _sosiFilePath;
-        private string _sosidagenFilePath;
-        private string _kofFilePath;
-        private List<string> _totFilePaths;
+
+        private string _fullSosiFilePath;
+        private string _fullsosidagenFilePath;
+        private string _fullKofFilePath;
+       
         private string _reportFolderPath;
         private string _sampleResultsFolderPath;
         public Dictionary<string, string> ReportFiles { get; private set; }
@@ -34,79 +36,150 @@ namespace Fargemannen.ViewModel
 
         public string SosiFilePath
         {
-            get => _sosiFilePath;
+            get => _fullSosiFilePath;
             set
             {
-                var fileName = Path.GetFileName(value); // Hent ut kun filnavnet
-                if (_sosiFilePath == fileName) return;
-                _sosiFilePath = fileName;
+                if (_fullSosiFilePath == value) return;
+
+                _fullSosiFilePath = value; // Lagrer den fullstendige stien
                 OnPropertyChanged(nameof(SosiFilePath));
+                OnPropertyChanged(nameof(DisplaySosiFilePath)); // Oppdater visningssti når full sti endres
                 ClearError();
+            }
+        }
+        public string DisplaySosiFilePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_fullSosiFilePath))
+                {
+                    return ""; // Returnerer en tom streng hvis stien er null eller tom
+                }
+
+                var parts = _fullSosiFilePath.Split('\\');
+                return parts.Length > 1 ? string.Join("\\", parts.Skip(parts.Length - 2)) : _fullSosiFilePath;
             }
         }
 
         public string SosidagenFilePath
         {
-            get => _sosidagenFilePath;
+            get => _fullsosidagenFilePath;
             set
             {
-                var fileName = Path.GetFileName(value);
-                if (_sosidagenFilePath == fileName) return;
-                _sosidagenFilePath = fileName;
+               
+                if (_fullsosidagenFilePath == value) return;
+                _fullsosidagenFilePath = value;
                 OnPropertyChanged(nameof(SosidagenFilePath));
+                OnPropertyChanged(nameof(DisplaySosidagenFilePath));
                 ClearError();
+            }
+        }
+
+        public string DisplaySosidagenFilePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_fullsosidagenFilePath))
+                {
+                    return ""; // Returnerer en tom streng hvis stien er null eller tom
+                }
+
+                var parts = _fullSosiFilePath.Split('\\');
+                return parts.Length > 1 ? string.Join("\\", parts.Skip(parts.Length - 2)) : _fullsosidagenFilePath;
             }
         }
 
         public string KofFilePath
         {
-            get => _kofFilePath;
+            get => _fullKofFilePath;
             set
             {
-                var fileName = Path.GetFileName(value);
-                if (_kofFilePath == fileName) return;
-                _kofFilePath = fileName;
+               
+                if (_fullKofFilePath == value) return;
+                _fullKofFilePath = value;
                 OnPropertyChanged(nameof(KofFilePath));
+                OnPropertyChanged(nameof(DisplayKofFilePath));
                 ClearError();
             }
         }
+        public string DisplayKofFilePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_fullKofFilePath))
+                {
+                    return ""; // Returnerer en tom streng hvis stien er null eller tom
+                }
 
-        public List<string> TotFilePaths
+                var parts = _fullKofFilePath.Split('\\');
+                return parts.Length > 1 ? string.Join("\\", parts.Skip(parts.Length - 2)) : _fullKofFilePath;
+            }
+        }
+
+        private ObservableCollection<string> _totFilePaths = new ObservableCollection<string>();
+
+        public ObservableCollection<string> TotFilePaths
         {
             get => _totFilePaths;
             set
             {
-                if (_totFilePaths == value) return;
                 _totFilePaths = value;
                 OnPropertyChanged(nameof(TotFilePaths));
-                ClearError();
             }
+        }
+
+        private string _infoTot;
+        public string InfoTot
+        {
+            get => _infoTot;
+            set
+            {
+                _infoTot = value;
+                OnPropertyChanged(nameof(InfoTot));
+            }
+        }
+        public string DisplayReportFolderPath
+        {
+            get => Path.GetFileName(_reportFolderPath);
         }
         public string ReportFolderPath
         {
             get => _reportFolderPath;
             set
             {
-                _reportFolderPath = value;
-                OnPropertyChanged(nameof(ReportFolderPath));
-                ClearError();
-                Model.ProsseseringAvFiler.PDFpross();
-                UpdateReportFilesDictionary();
+                if (_reportFolderPath != value)
+                {
+                    _reportFolderPath = value;
+                    OnPropertyChanged(nameof(ReportFolderPath));
+                    OnPropertyChanged(nameof(DisplayReportFolderPath));  // Trigger oppdatering av visning
+                    ClearError();
+                    Model.ProsseseringAvFiler.PDFpross();
+                    UpdateReportFilesDictionary();
+                }
             }
         }
-
         public string SampleResultsFolderPath
         {
             get => _sampleResultsFolderPath;
             set
             {
-                _sampleResultsFolderPath = value;
-                OnPropertyChanged(nameof(SampleResultsFolderPath));
-                ClearError();
-                Model.ProsseseringAvFiler.PDFpross();
-                UpdateSampleResultsFilesDictionary();
+                if (_sampleResultsFolderPath != value)
+                {
+                    _sampleResultsFolderPath = value;
+                    OnPropertyChanged(nameof(SampleResultsFolderPath));
+                    OnPropertyChanged(nameof(DisplaySampleResultsFolderPath));  // Trigger oppdatering av visning
+                    ClearError();
+                    Model.ProsseseringAvFiler.PDFpross();
+                    UpdateSampleResultsFilesDictionary();
+                }
             }
         }
+
+        public string DisplaySampleResultsFolderPath
+        {
+            get => Path.GetFileName(_sampleResultsFolderPath);
+        }
+     
         public string ErrorMessage
         {
             get => _errorMessage;
@@ -150,7 +223,7 @@ namespace Fargemannen.ViewModel
             ReportFiles = new Dictionary<string, string>();
             SampleResultFiles = new Dictionary<string, string>();
 
-            _totFilePaths = new List<string>();
+            
         }
         private void UploadReportFolder()
         {
@@ -176,7 +249,7 @@ namespace Fargemannen.ViewModel
                 if (!ReportFiles.ContainsKey(fileName))
                     ReportFiles.Add(fileName, filePath);
             }
-            PrintDictionaryContents(ReportFiles, "Rapport Files");
+            //PrintDictionaryContents(ReportFiles, "Rapport Files");
         }
 
         private void UpdateSampleResultsFilesDictionary()
@@ -189,7 +262,7 @@ namespace Fargemannen.ViewModel
                 if (!SampleResultFiles.ContainsKey(fileName))
                     SampleResultFiles.Add(fileName, filePath);
             }
-            PrintDictionaryContents(SampleResultFiles, "Sample Result Files");
+            //PrintDictionaryContents(SampleResultFiles, "Sample Result Files");
         }
         private void UploadSosi()
         {
@@ -205,17 +278,9 @@ namespace Fargemannen.ViewModel
 
                
             }
-            else
-            {
-                ErrorMessage = "Ingen SOSI fil ble valgt.";
-            }
-            
+            Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Opplastet SOSI-filer");
         }
 
-        private void ClearError()
-        {
-            ErrorMessage = "";
-        }
 
         private void UploadSosidagen()
         {
@@ -228,6 +293,7 @@ namespace Fargemannen.ViewModel
             {
                 SosidagenFilePath = fileDialog.FileName;
             }
+            Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Opplastet SosiIdagen-filer");
         }
 
         private void UploadKof()
@@ -241,27 +307,32 @@ namespace Fargemannen.ViewModel
             {
                 KofFilePath = fileDialog.FileName;
             }
+            Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Opplastet KOF-filer");
         }
 
         private void UploadTot()
         {
-            var fileDialog = new OpenFileDialog
+            Microsoft.Win32.OpenFileDialog fileDialog = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "TOT-filer|*.tot",  // Placeholder, replace with actual extension
-                Multiselect = true  // Allow multiple file selection
+                Filter = "TOT-filer|*.TOT",
+                Multiselect = true
             };
 
-            if (fileDialog.ShowDialog() == true)
+            bool? success = fileDialog.ShowDialog();
+
+            if (success == true)
             {
-                foreach (var fileName in fileDialog.FileNames)
+                TotFilePaths.Clear();  // Tøm listen før nye filer legges til
+                foreach (string fileName in fileDialog.FileNames)
                 {
-                    _totFilePaths.Add(fileName);
+                    TotFilePaths.Add(System.IO.Path.GetFileName(fileName));  // Legg til kun filnavn
                 }
-                OnPropertyChanged(nameof(TotFilePaths));  // Notify that the file list has changed
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Opplastet TOT-filer");
             }
             else
             {
-                ErrorMessage = "Ingen TOT filer ble valgt.";
+                TotFilePaths.Clear();
+                TotFilePaths.Add("Ingen filer ble valgt.");  // Vis denne meldingen i ListBox
             }
         }
 
@@ -274,6 +345,11 @@ namespace Fargemannen.ViewModel
             {
                 ed.WriteMessage($"Key: {entry.Key}, Value: {entry.Value}\n");
             }
+        }
+
+        private void ClearError()
+        {
+            ErrorMessage = "";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
