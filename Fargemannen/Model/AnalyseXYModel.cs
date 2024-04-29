@@ -188,7 +188,7 @@ namespace Fargemannen.Model
 
 
 
-            string melding = $"Operasjonen var vellykket. Ruter med størrelse {ruteStr}m x {ruteStr}m er generert";
+            string melding = $"Lager rutenett på {ruteStr}m x {ruteStr}m er generert";
 
             Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog(melding);
         }

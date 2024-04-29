@@ -7,21 +7,21 @@
         Title="Fargemannen" Height="700" Width="700">
 
     <Grid>
-        
+
         <TabControl>
-            <TabItem Header="FilOpplasting">
+            <TabItem Header="FilOpplasting" Width="150" HorizontalContentAlignment="Center">
                 <local:FileUpload />
             </TabItem>
-            <TabItem Header="Symboler">
+            <TabItem Header="Symboler" Width="150" HorizontalContentAlignment="Center">
                 <local:Symbols />
             </TabItem>
-            <TabItem Header="AnalyseXY">
+            <TabItem Header="AnalyseXY" Width="150" HorizontalContentAlignment="Center">
                 <local:AnalyseXY />
             </TabItem>
-            <TabItem Header="AnalyseZ">
+            <TabItem Header="AnalyseZ" Width="150" HorizontalContentAlignment="Center">
                 <local:AnalyseZ />
             </TabItem>
-            <TabItem Header="DIV">
+            <TabItem Header="DIV" Width="50" HorizontalContentAlignment="Center">
                 <local:DIV />
             </TabItem>
 
