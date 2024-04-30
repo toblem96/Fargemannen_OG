@@ -63,7 +63,7 @@
                     <Button Content="Lag EXCL rapport" Command="{Binding kjørRapport}" Grid.Column="1" Grid.Row="5"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="CS" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
+            <TabItem Header="Mesh Duk" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

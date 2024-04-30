@@ -403,7 +403,7 @@ namespace Fargemannen.ViewModel
     };
                 Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
 
-                //
+                
 
 
             }

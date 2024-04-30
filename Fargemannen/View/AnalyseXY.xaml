@@ -54,8 +54,9 @@
                         <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding RuteStørresle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left"/>
                     </StackPanel>
-
-                    <Button Grid.Column="1" Grid.Row="7" Content="Velg Analyseområde" Command="{Binding VelgAnalyseXYCommand}" Height="50"/>
+                    <RadioButton Content="Fargekart" GroupName="AnalyseType" IsChecked="{Binding IsFargekartSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" Margin="0,20,0,0" />
+                    <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" />
+                    <Button Grid.Column="1" Grid.Row="8" Content="Velg Analyseområde" Command="{Binding VelgAnalyseXYCommand}" Height="50" Margin="0,20,0,0"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Sett Intervaller" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">

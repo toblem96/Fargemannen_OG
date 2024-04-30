@@ -33,6 +33,7 @@ namespace Fargemannen.ViewModel
 
         private string _errorMessage;
         public List<string> TotPaths;
+   
 
 
         public string SosiFilePath

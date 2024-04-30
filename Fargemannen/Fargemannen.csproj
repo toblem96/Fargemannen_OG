@@ -235,6 +235,8 @@
     <Compile Include="Model\AnalyseZModel.cs" />
     <Compile Include="Model\DukXYModel.cs" />
     <Compile Include="Model\EXCEL.cs" />
+    <Compile Include="Model\GetMeshData.cs" />
+    <Compile Include="Model\ItemCheck.cs" />
     <Compile Include="Model\LegdenModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />
     <Compile Include="Model\SymbolModel.cs" />

@@ -32,6 +32,7 @@ namespace Fargemannen.ViewModel
         private double _minVerdiXY;
         private double _maxVerdiXY;
         private double _totalProsent;
+        public List<double> lengdeVerdierXY; 
 
 
 
@@ -70,6 +71,49 @@ namespace Fargemannen.ViewModel
                 OnPropertyChanged(nameof(SonderingTypesXY)); //ENDRET HER: Sørger for at endringer i listen oppdaterer UI
             }
         }
+
+        //Type visualiseirng 
+        private bool _isFargekartSelected = true;
+        private bool _isMeshDukSelected = false;
+
+        public bool IsFargekartSelected
+        {
+            get => _isFargekartSelected;
+            set
+            {
+                if (_isFargekartSelected != value)
+                {
+                    _isFargekartSelected = value;
+                    OnPropertyChanged(nameof(IsFargekartSelected));
+
+                    // Når Fargekart velges, sett Mesh Duk til motsatt verdi
+                    if (value)
+                    {
+                        IsMeshDukSelected = !value;
+                    }
+                }
+            }
+        }
+
+        public bool IsMeshDukSelected
+        {
+            get => _isMeshDukSelected;
+            set
+            {
+                if (_isMeshDukSelected != value)
+                {
+                    _isMeshDukSelected = value;
+                    OnPropertyChanged(nameof(IsMeshDukSelected));
+
+                    // Når Mesh Duk velges, sett Fargekart til motsatt verdi
+                    if (value)
+                    {
+                        IsFargekartSelected = !value;
+                    }
+                }
+            }
+        }
+
 
         public int MinYear
         {
@@ -235,11 +279,11 @@ namespace Fargemannen.ViewModel
             string ProjectType = "";
 
 
-
+            Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Analyse XY");
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesXY, NummerType, ProjectType);
 
             DukXYModel Duk = new DukXYModel();
-            Duk.KjørDukPåXY(pointsToSymbol, intervallListe, BergmodellLagNavn);
+            //Duk.KjørDukPåXY(pointsToSymbol, intervallListe, BergmodellLagNavn);
 
         }
         public void LagLegend() 
@@ -320,7 +364,7 @@ namespace Fargemannen.ViewModel
      
         private void UpdateIntervalsAndCalculatePercentages()
         {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
+            var lengdeVerdier = lengdeVerdierXY;
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
                 foreach (var intervall in Intervaller)
@@ -374,24 +418,36 @@ namespace Fargemannen.ViewModel
 
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesXY, NummerType, ProjectType);
 
-             var PunkterMesh  = NullstillZVerdierOgLagreIAnalyseListe(punkterMesh);
-            Fargemannen.Model.AnalyseXYModel.Start(PunkterMesh, RuteStørresle);
-            UpdateIntervalsAndCalculatePercentages();
-            FetchValues();
-
-
-            var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
-
-            // Print hver verdi på en ny linje i AutoCAD's kommandolinje
-            foreach (double l in sortedValues)
+            if (IsFargekartSelected)
             {
-                ed.WriteMessage($"\n{l:F2}");  // Formaterer tall til 2 desimaler for bedre leselighet
+                var PunkterMesh = NullstillZVerdierOgLagreIAnalyseListe(punkterMesh);
+                Fargemannen.Model.AnalyseXYModel.Start(PunkterMesh, RuteStørresle);
+            
+           
+                lengdeVerdierXY = AnalyseXYModel.lengdeVerdier;
+                UpdateIntervalsAndCalculatePercentages();
+                FetchValues();
+                var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
+                ed.WriteMessage(Fargemannen.Model.AnalyseXYModel.lengdeVerdier.Count.ToString());
+
+            }
+            else 
+            {
+                DukXYModel Duk = new DukXYModel();
+                Duk.KjørDukPåXY(pointsToSymbol, BergmodellLagNavn);
+                lengdeVerdierXY = Model.DukXYModel.VerdierXY;
+                UpdateIntervalsAndCalculatePercentages();
+                FetchValues();
+                var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
             }
 
+            
 
 
 
-            ed.WriteMessage(Fargemannen.Model.AnalyseXYModel.lengdeVerdier.Count.ToString());
+
+
+           
         }
         public List<Intervall> GetIntervallListe()
         {
@@ -406,7 +462,15 @@ namespace Fargemannen.ViewModel
 
             var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
 
-            Model.AnalyseXYModel.PlasserFirkanterIIntervallLayersOgFyllMedFarge(SliderValue, intervallListe);
+            if (IsFargekartSelected)
+            {
+                Model.AnalyseXYModel.PlasserFirkanterIIntervallLayersOgFyllMedFarge(SliderValue, intervallListe);
+            }
+            else
+            {
+                DukXYModel Duk = new DukXYModel();
+                Duk.FargeMesh(lengdeVerdierXY, BergmodellLagNavn, intervallListe);
+            }
 
             ed.WriteMessage($"{SliderValue}");
         }
@@ -485,7 +549,7 @@ namespace Fargemannen.ViewModel
                 {
                     _startVerdi = value;
                     OnPropertyChanged(nameof(StartVerdi));
-                    CalculateAndUpdatePercentage();
+                    //CalculateAndUpdatePercentage();
                 }
             }
         }
@@ -527,7 +591,7 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                   //UpdateLayerColor(Navn, Farge);
+                   UpdateLayerColor(Navn, Farge);
                 }
             }
         }
@@ -593,9 +657,10 @@ namespace Fargemannen.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void CalculateAndUpdatePercentage()
+       private void CalculateAndUpdatePercentage()
         {
-            var lengdeVerdier = Fargemannen.Model.AnalyseXYModel.lengdeVerdier;
+            
+            var lengdeVerdier = Model.DukXYModel.VerdierXY;
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
                 Prosent = 0;

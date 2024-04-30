@@ -20,7 +20,8 @@ namespace Fargemannen.Model
 {
     internal class DukXYModel
     {
-        public  void KjørDukPåXY(List<PunktInfo> PunkterForAnalyse, List<ViewModel.Intervall> interaller, string layerBergmodell  )
+        public static List<double> VerdierXY = new List<double>();
+        public  void KjørDukPåXY(List<PunktInfo> PunkterForAnalyse, string layerBergmodell  )
         {
 
 
@@ -79,6 +80,7 @@ namespace Fargemannen.Model
             }
 
             List<double> closestDistances = CalculateClosestDistances(midPoints, symbolPoints);
+            VerdierXY = closestDistances;
 
 
 
@@ -88,9 +90,14 @@ namespace Fargemannen.Model
 
 
 
-            ColorizeTinSurfaceTriangles(closestDistances, layerBergmodell, interaller);
+            //ColorizeTinSurfaceTriangles(closestDistances, layerBergmodell, interaller);
 
             doc.Editor.WriteMessage($"Koden kjørte hele veien");
+        }
+
+        public void FargeMesh(List<double> closestDistances, string layerBergmodell, List<ViewModel.Intervall> intervaller)
+        {
+            ColorizeTinSurfaceTriangles(closestDistances, layerBergmodell, intervaller);
         }
 
         public static void ColorizeTinSurfaceTriangles(List<double> closestDistances, string layerBergmodell, List<ViewModel.Intervall> intervaller)
