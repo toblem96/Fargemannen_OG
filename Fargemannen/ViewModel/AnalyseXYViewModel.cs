@@ -86,10 +86,12 @@ namespace Fargemannen.ViewModel
                     _isFargekartSelected = value;
                     OnPropertyChanged(nameof(IsFargekartSelected));
 
-                    // Når Fargekart velges, sett Mesh Duk til motsatt verdi
-                    if (value)
+                    if (value) // Hvis Fargekart er valgt, sett Mesh Duk til false
                     {
-                        IsMeshDukSelected = !value;
+                        if (_isMeshDukSelected) // Unngå rekursiv oppdatering hvis allerede false
+                        {
+                            IsMeshDukSelected = false;
+                        }
                     }
                 }
             }
@@ -105,15 +107,16 @@ namespace Fargemannen.ViewModel
                     _isMeshDukSelected = value;
                     OnPropertyChanged(nameof(IsMeshDukSelected));
 
-                    // Når Mesh Duk velges, sett Fargekart til motsatt verdi
-                    if (value)
+                    if (value) // Hvis Mesh Duk er valgt, sett Fargekart til false
                     {
-                        IsFargekartSelected = !value;
+                        if (_isFargekartSelected) // Unngå rekursiv
+                        {
+                            IsFargekartSelected = false;
+}
                     }
                 }
             }
         }
-
 
         public int MinYear
         {
@@ -203,9 +206,10 @@ namespace Fargemannen.ViewModel
             get => _totalProsent;
             set
             {
-                if (_totalProsent != value)
+                double roundedValue = Math.Round(value);
+                if (_totalProsent != roundedValue)
                 {
-                    _totalProsent = value;
+                    _totalProsent = roundedValue;
                     OnPropertyChanged(nameof(TotalProsent));
                 }
             }
@@ -350,14 +354,13 @@ namespace Fargemannen.ViewModel
 
         private void FetchValues()
         {
-          
-            MinVerdiXY = Fargemannen.Model.AnalyseXYModel.minVerdiXY;
-            MaxVerdiXY = Fargemannen.Model.AnalyseXYModel.maxVerdiXY;
+            MinVerdiXY = lengdeVerdierXY.Min();
+            MaxVerdiXY = lengdeVerdierXY.Max();
         }
 
         public void RecalculateTotalPercentage()
         {
-            TotalProsent = Intervaller.Sum(intervall => intervall.Prosent);
+            TotalProsent = Math.Round(Intervaller.Sum(intervall => intervall.Prosent));
             OnPropertyChanged(nameof(TotalProsent)); // Sørger for å oppdatere UI med den nye totalen
         }
 
@@ -393,7 +396,7 @@ namespace Fargemannen.ViewModel
                 }
 
                 int countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x <= intervall.SluttVerdi);
-                intervall.Prosent = (double)countInInterval / totalLengder * 100;
+                intervall.Prosent = Math.Round((double)countInInterval / totalLengder * 100);
 
                 intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Oppdaterer UI for hver endring
                 RecalculateTotalPercentage();
@@ -433,21 +436,15 @@ namespace Fargemannen.ViewModel
             }
             else 
             {
+                string placeHolder = "HvaEr";
+                string analysetype = "XY";
                 DukXYModel Duk = new DukXYModel();
-                Duk.KjørDukPåXY(pointsToSymbol, BergmodellLagNavn);
+                Duk.KjørDukPåXY(pointsToSymbol, BergmodellLagNavn, placeHolder, analysetype);
                 lengdeVerdierXY = Model.DukXYModel.VerdierXY;
                 UpdateIntervalsAndCalculatePercentages();
                 FetchValues();
                 var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
             }
-
-            
-
-
-
-
-
-           
         }
         public List<Intervall> GetIntervallListe()
         {
@@ -573,9 +570,11 @@ namespace Fargemannen.ViewModel
             get => _prosent;
             set
             {
-                if (_prosent != value)
+                // Rund av verdien til nærmeste hele tall før du sammenligner og setter den
+                double roundedValue = Math.Round(value);
+                if (_prosent != roundedValue)
                 {
-                    _prosent = value;
+                    _prosent = roundedValue;
                     OnPropertyChanged(nameof(Prosent));
                 }
             }
@@ -591,7 +590,7 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                   UpdateLayerColor(Navn, Farge);
+                   //UpdateLayerColor(Navn, Farge);
                 }
             }
         }

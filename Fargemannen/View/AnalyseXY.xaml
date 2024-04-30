@@ -53,10 +53,13 @@
                         <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left"/>
                         <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding RuteStørresle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Navn på Bergmodell-lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,50,0,10"/>
+
+                        <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
                     </StackPanel>
                     <RadioButton Content="Fargekart" GroupName="AnalyseType" IsChecked="{Binding IsFargekartSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" Margin="0,20,0,0" />
-                    <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" />
-                    <Button Grid.Column="1" Grid.Row="8" Content="Velg Analyseområde" Command="{Binding VelgAnalyseXYCommand}" Height="50" Margin="0,20,0,0"/>
+                    <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" />
+                    <Button Grid.Column="1" Grid.Row="9" Content="Velg Analyseområde" Command="{Binding VelgAnalyseXYCommand}" Height="50" Margin="0,20,0,0"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Sett Intervaller" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
@@ -138,10 +141,8 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top"
                    FontSize="15"  FontFamily="Artifakt Element Medium" Margin="0,20,0,10"/>
                         <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130" HorizontalAlignment="Left"/>
-                        <TextBlock Text="Navn på Bergmodell-lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,50,0,10"/>
+                       
                         
-                        <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <Button Content="Legg duk på bergmodell" Command="{Binding KjørDukCommand}" Grid.Column="3" Grid.Row="6"/>
 
                     </StackPanel>
                     <TextBlock Text="0         Gjennomsiktighet            100" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"

@@ -15,13 +15,16 @@ using System.Diagnostics;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.Aec.Geometry;
 using System.Web;
+using Autodesk.Civil;
+using Autodesk.AutoCAD.Customization;
 
 namespace Fargemannen.Model
 {
     internal class DukXYModel
     {
         public static List<double> VerdierXY = new List<double>();
-        public  void KjørDukPåXY(List<PunktInfo> PunkterForAnalyse, string layerBergmodell  )
+        public static List<double> VerdierZ = new List<double>();
+        public  void KjørDukPåXY(List<PunktInfo> PunkterForAnalyse, string layerBergmodell, string layerTerrengmodel, string analyseType)
         {
 
 
@@ -32,7 +35,7 @@ namespace Fargemannen.Model
             {
                 using (doc.LockDocument())
                 {
-                    TinSurface bergmodell = GetTinSurfaceFromLayerName(layerBergmodell, acTrans, acCurDb);
+                    TinSurface bergmodell = GetMeshData.GetTinSurfaceFromLayerName(layerBergmodell, acTrans, acCurDb);
 
                     // Sjekker om bergmodell ikke er null
                     if (bergmodell != null)
@@ -79,10 +82,34 @@ namespace Fargemannen.Model
                 doc.Editor.WriteMessage($"\n{leng}");
             }
 
-            List<double> closestDistances = CalculateClosestDistances(midPoints, symbolPoints);
-            VerdierXY = closestDistances;
+
+            if (analyseType == "XY")
+            {
+
+                List<double> closestDistances = CalculateClosestDistances(midPoints, symbolPoints);
+                VerdierXY = closestDistances;
+
+            }
+            else
+            {
+
+                Document docc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database acCurDbc = doc.Database;
+
+                using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                {
+                    using (doc.LockDocument())
+                    {
+                        CalculateElevationDifferences(acTrans, acCurDbc, layerTerrengmodel, layerBergmodell, midPoints );
 
 
+                        acTrans.Commit();
+
+
+                    }
+                    
+                }
+            }
 
 
 
@@ -460,6 +487,155 @@ namespace Fargemannen.Model
             }
             return null;
         }
+
+        public static void CalculateElevationDifferences(Transaction acTrans, Database acCurDb, string terrengModellLagNavn, string bergmodellLagNavn, List<Point3d> MidPointsZ)
+        {
+            VerdierZ.Clear();
+
+            // Hent bergmodell og terrengmodeller
+            TinSurface bergmodell = GetTinSurfaceFromLayerName(bergmodellLagNavn, acTrans, acCurDb);
+            List<GridSurface> terrengmodeller = GetSurfacesFromLayer(acTrans, acCurDb, terrengModellLagNavn);
+
+            // Hent grenser for bergmodellen
+
+            List<Point2d> bergGrenser = ExtractBordersFromTinSurface(acTrans, bergmodell);
+
+            // Hent grenser for hver terrengmodell
+            List<List<Point2d>> terrengBorders = terrengmodeller.Select(surface => ExtractBorders(acTrans, surface)).ToList();
+
+            foreach (Point3d midPoint in MidPointsZ)
+            {
+              
+                var (isInside, terrengIndex) = IsPointInsideBothBorders(new Point2d(midPoint.X, midPoint.Y), terrengBorders, bergGrenser);
+
+                if (!isInside)
+                {
+                    VerdierZ.Add(-999);
+                }
+                else
+                {
+                    // Hent den spesifikke terrengmodellen for det gjeldende punktet
+                    GridSurface specificSurface = terrengmodeller[terrengIndex.Value];
+                    double elevationDifference = CalculateElevationDifference(acTrans, bergmodell, specificSurface, midPoint);
+                    VerdierZ.Add(elevationDifference);
+                }
+            }
+        }
+        private static List<GridSurface> GetSurfacesFromLayer(Transaction acTrans, Database acCurDb, string terrengModellLagNavn)
+        {
+            List<GridSurface> surfaces = new List<GridSurface>();
+            BlockTable blockTable = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord modelSpace = (BlockTableRecord)acTrans.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+
+            foreach (ObjectId objectId in modelSpace)
+            {
+                Autodesk.Civil.DatabaseServices.Entity entity = acTrans.GetObject(objectId, OpenMode.ForRead) as Autodesk.Civil.DatabaseServices.Entity;
+                if (entity != null && entity.Layer == terrengModellLagNavn && entity is GridSurface gridSurface)
+                {
+                    surfaces.Add(gridSurface);
+                }
+
+            }
+            return surfaces;
+        }
+        private static (bool, int?) IsPointInsideBothBorders(Point2d point, List<List<Point2d>> terrengBorders, List<Point2d> bergBorder)
+        {
+            int? insideTerrengIndex = null;
+            for (int i = 0; i < terrengBorders.Count; i++)
+            {
+                if (IsPointInsidePolygon(terrengBorders[i], point))
+                {
+                    insideTerrengIndex = i;
+                    break;
+                }
+            }
+
+            bool insideBerg = IsPointInsidePolygon(bergBorder, point);
+            return (insideBerg && insideTerrengIndex != null, insideTerrengIndex);
+        }
+        private static double CalculateElevationDifference(Transaction acTrans, TinSurface bergmodell, GridSurface terrengmodell, Point3d midPoint)
+        {
+
+            double avstandTilBerg = bergmodell.FindElevationAtXY(midPoint.X, midPoint.Y);
+            double avstandTilTerreng = terrengmodell.FindElevationAtXY(midPoint.X, midPoint.Y);
+
+
+
+            double differanse = Math.Round(avstandTilTerreng - avstandTilBerg);
+            return Math.Round(Math.Max(0, differanse)); // Returner differansen, men minimum 0
+
+        }
+
+        private static List<Point2d> ExtractBorders(Transaction acTrans, GridSurface surface)
+        {
+            List<Point2d> borderPoints = new List<Point2d>();
+            ObjectIdCollection borderIds = surface.ExtractBorder(SurfaceExtractionSettingsType.Plan);
+            foreach (ObjectId borderId in borderIds)
+            {
+                Polyline3d polyline3d = acTrans.GetObject(borderId, OpenMode.ForRead) as Polyline3d;
+                if (polyline3d != null)
+                {
+                    foreach (ObjectId vertexId in polyline3d)
+                    {
+                        PolylineVertex3d vertex = acTrans.GetObject(vertexId, OpenMode.ForRead) as PolylineVertex3d;
+                        borderPoints.Add(new Point2d(vertex.Position.X, vertex.Position.Y));
+                    }
+                }
+            }
+            return borderPoints;
+        }
+        private static List<Point2d> ExtractBordersFromTinSurface(Transaction acTrans, TinSurface surface)
+        {
+            List<Point2d> borderPoints = new List<Point2d>();
+            if (surface == null)
+                return borderPoints; // Returner tom liste hvis overflaten ikke er gyldig
+
+            // Ekstraher grensene fra TinSurface
+            ObjectIdCollection borderIds = surface.ExtractBorder(SurfaceExtractionSettingsType.Plan);
+            Console.WriteLine("# of surface borders: " + borderIds.Count);
+
+            foreach (ObjectId borderId in borderIds)
+            {
+                Polyline3d border = acTrans.GetObject(borderId, OpenMode.ForRead) as Polyline3d;
+                if (border != null)
+                {
+                    Console.WriteLine("Surface border vertices:");
+                    foreach (ObjectId vertexId in border)
+                    {
+                        PolylineVertex3d vertex = acTrans.GetObject(vertexId, OpenMode.ForRead) as PolylineVertex3d;
+                        if (vertex != null)
+                        {
+                            borderPoints.Add(new Point2d(vertex.Position.X, vertex.Position.Y));
+                            Console.WriteLine(String.Format("  - Border vertex at: {0}", vertex.Position.ToString()));
+                        }
+                    }
+                }
+            }
+
+            return borderPoints;
+        }
+
+
+        public static bool IsPointInsidePolygon(List<Point2d> polygon, Point2d testPoint)
+        {
+            bool result = false;
+            int j = polygon.Count - 1;
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+                {
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+
+
 
     }
 }
