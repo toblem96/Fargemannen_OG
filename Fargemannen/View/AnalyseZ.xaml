@@ -9,7 +9,7 @@
              d:DesignHeight="700" d:DesignWidth="700">
     <Grid DataContext="{Binding Source={x:Static vm:AnalyseZViewModel.Instance}}">
         <TabControl>
-            <TabItem Header="Velg Analyse Omeråde">
+            <TabItem Header="Velg Analyse Omeråde" Width="335">
                 <Grid Background="White" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20"/>
@@ -65,13 +65,14 @@
                         
                     </StackPanel>
                     <Button Command="{Binding LagBergmodellCommand}" Content="Generer Bergmodell"  Grid.Column="4" Grid.Row="7" Height="40" Width="120"  Margin="0,3,0,0"/>
-                    <Button Command="{Binding KampCommand}" Content="Kamp Bergmodell"  Grid.Column="4" Grid.Row="8" Height="40" Width="120"  Margin="0,3,0,0"/>
-                    <RadioButton Content="Fargekart" GroupName="AnalyseType" IsChecked="{Binding IsFargekartSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" Margin="0,20,0,0" />
-                    <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" />
-                    <Button Grid.Column="1" Grid.Row="9" Content="Velg Analyseområde" Command="{Binding VelgAnalyseZCommand}"  Margin="0,3,0,0" Height="40"/>
+                    <Button Command="{Binding KampCommand}" Content="Rediger Bergmodell"  Grid.Column="4" Grid.Row="9" Height="40" Width="120"  Margin="0,0,0,0"/>
+                    <TextBlock Text="Type visualisering" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,0" Grid.Column="1" Grid.Row="7" VerticalAlignment="Center"/>
+                    <RadioButton Content="Fargekart" GroupName="AnalyseType" IsChecked="{Binding IsFargekartSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" Margin="0,0,0,0" />
+                    <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="9" />
+                    <Button Grid.Column="1" Grid.Row="10" Content="Kjør Analyse" Command="{Binding VelgAnalyseZCommand}"  Margin="0,20,0,0" Height="40"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Sett Intervaller" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">
+            <TabItem Header="Sett Intervaller" Width="335">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -145,9 +146,11 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
                         <TextBlock Text="{Binding MaxVerdiZ}" FontSize="15" Grid.Column="2" Grid.Row="0" FontFamily="Artifakt Element Medium"/>
 
                         <TextBlock Text="{Binding TotalProsent, StringFormat='Total Prosent: {0:N0}%'}"
-           HorizontalAlignment="Center" VerticalAlignment="Top"
-           FontSize="15" Margin="10" FontFamily="Artifakt Element Medium"/>
-                        <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130"/>
+ VerticalAlignment="Top"
+FontSize="15"  FontFamily="Artifakt Element Medium" Margin="35,150,0,10"/>
+
+
+                        <Button Content="Oppdater Total Prosent" Command="{Binding OppdaterTotalProsetCommand}" Grid.Column="3" Grid.Row="6" Width="130" Height="40" />
 
                     </StackPanel>
                     <TextBlock Text="0         Gjennomsiktighet           100" FontSize="15" Grid.Column="0" Grid.Row="1" FontFamily="Artifakt Element Medium"
@@ -160,8 +163,9 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
              Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                     Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
-                    <Button Content="Maker noe" Command="{Binding MarkerBergCommand}" Grid.Column="3" Grid.Row="8" Width="130" HorizontalAlignment="Left"/>
+                    
                     <Button Content="Lag Legend" Grid.Column="2" Grid.Row="3" Command="{Binding KjørLegendZCommand}" Margin="0,25,0,0" Width="120" Height="40"/>
+                    <Button Content="Maker Usikkerhet" Command="{Binding MarkerBergCommand}" Grid.Column="2" Grid.Row="7" Width="120" Height="40" Margin="0,25,0,0" />
                 </Grid>
             </TabItem>
         </TabControl>

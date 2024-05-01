@@ -113,7 +113,7 @@ namespace Fargemannen.ViewModel
                         if (_isFargekartSelected) // Unngå rekursiv
                         {
                             IsFargekartSelected = false;
-}
+                        }
                     }
                 }
             }

@@ -14,7 +14,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="136"/>
-                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
@@ -49,18 +49,18 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <StackPanel Grid.Column="4" Grid.Row="4" Orientation="Vertical" Grid.ColumnSpan="5" >
-                        <TextBlock Text="Velg Rapport navn" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-                        <TextBox Text="{Binding ReportName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <Button Content="Velg Lagrings Plass" Command="{Binding SaveCommand}" />
-                        <TextBox Text="{Binding SavePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-                        <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <TextBlock Text="Navn på Terreng lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-                        <TextBox Text="{Binding TerrengModellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-                        <TextBlock Text="Navn på Berg lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-                        <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
+                        <TextBlock Text="Velg Rapport navn" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding ReportName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left" />
+                        <Button Content="Velg Lagrings Plass" Command="{Binding SaveCommand}" Width="120" Height="20" HorizontalAlignment="Left" />
+                        <TextBox Text="{Binding SavePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left" />
+                        <TextBlock Text="Rute størresle:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left" />
+                        <TextBlock Text="Navn på Terreng lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,5" HorizontalAlignment="Left" />
+                        <TextBox Text="{Binding TerrengModellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left" />
+                        <TextBlock Text="Navn på Berg lag:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,5" HorizontalAlignment="Left" />
+                        <TextBox Text="{Binding BergmodellLagNavn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10" HorizontalAlignment="Left" />
                     </StackPanel>
-                    <Button Content="Lag EXCL rapport" Command="{Binding kjørRapport}" Grid.Column="1" Grid.Row="5"/>
+                    <Button Content="Lag EXCL rapport" Command="{Binding kjørRapport}" Grid.Column="1" Grid.Row="5" Height="40"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Mesh Duk" Height="22" Margin="-2,0,-2,2" VerticalAlignment="Bottom">

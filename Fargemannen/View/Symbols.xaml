@@ -11,14 +11,14 @@
     <Grid  DataContext="{Binding Source={x:Static vm:SymbolsViewModel.Instance}}" Background="White">
 
         <TabControl>
-            <TabItem Header="Generer Symbol" Width="350">
+            <TabItem Header="Generer Symbol" Width="335" >
                 <Grid Background="White" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="20"/>
                     </Grid.ColumnDefinitions>
@@ -58,24 +58,24 @@
 
 
                     <StackPanel Grid.Column="3" Grid.Row="4" Orientation="Vertical">
+                        <TextBlock Text="Velg prosjekt:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,6"/>
+                        <RadioButton Content="PDF-nummer" GroupName="ProjectType" IsChecked="{Binding UsePDFProject, Mode=TwoWay}"/>
+                        <RadioButton Content="Saksnummer" GroupName="ProjectType" IsChecked="{Binding UseCaseProject, Mode=TwoWay}"/>
+                        <RadioButton Content="Egendefinert:" GroupName="ProjectType" IsChecked="{Binding UseCustomProject, Mode=TwoWay}"/>
+                        
+                        <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="0,5,0,0" HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Borenummer:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,15,0,6"/>
+                        <RadioButton Content="SOSI nummer" GroupName="NummerType" IsChecked="{Binding UseSOSINumber, Mode=TwoWay}"/>
+                        <RadioButton Content="PDF nummer" GroupName="NummerType" IsChecked="{Binding UsePDFNumber, Mode=TwoWay}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="5" Grid.Row="4" Orientation="Vertical">
                         <TextBlock Text="Minimums årsgrense:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
                         <TextBox Text="{Binding MinYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120"  HorizontalAlignment="Left"/>
 
                         <TextBlock Text="Minimums bor i fjell:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,10,0,10"/>
                         <TextBox Text="{Binding MinDrillingDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,20" HorizontalAlignment="Left"/>
-
-                        <TextBlock Text="Velg prosjekt:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-                        <RadioButton Content="PDF-nummer" GroupName="ProjectType" IsChecked="{Binding UsePDFProject, Mode=TwoWay}"/>
-                        <RadioButton Content="Saksnummer" GroupName="ProjectType" IsChecked="{Binding UseCaseProject, Mode=TwoWay}"/>
-                        <RadioButton Content="Egendefinert:" GroupName="ProjectType" IsChecked="{Binding UseCustomProject, Mode=TwoWay}"/>
-                        <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="0,0,0,0" HorizontalAlignment="Left"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="5" Grid.Row="4" Orientation="Vertical">
-                        <TextBlock Text="Borenummer:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,0,0,10"/>
-
-                        <RadioButton Content="SOSI nummer" GroupName="NummerType" IsChecked="{Binding UseSOSINumber, Mode=TwoWay}"/>
-                        <RadioButton Content="PDF nummer" GroupName="NummerType" IsChecked="{Binding UsePDFNumber, Mode=TwoWay}"/>
                     </StackPanel>
 
 
@@ -84,10 +84,10 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Rediger Symbol" Width="345">
+            <TabItem Header="Rediger Symbol" Width="335">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="135"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="auto"/>
@@ -105,16 +105,7 @@
                         <RowDefinition Height="20" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="50" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="20" />
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="20" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="20" />
+                        
                     </Grid.RowDefinitions>
 
                     <!-- Color selection for normal symbol -->
@@ -128,12 +119,12 @@
                     <Rectangle Grid.Column="3" Grid.Row="4" Height="39" Width="162" Stroke="Black" Fill="{Binding minDrillingSymbolColorBrush}"/>
 
                     <!-- Rotation slider -->
-                    <TextBlock Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Rotasjon av symbol:"/>
+                    <TextBlock Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Rotasjon av symbol:" Margin="0,20,0,0"/>
                     <Slider x:Name="sliderRotasjon" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="7"
                             Minimum="-180" Maximum="180" Value="{Binding Rotation, Mode=TwoWay}" TickFrequency="5" IsSnapToTickEnabled="True"/>
 
                     <!-- Scale slider -->
-                    <TextBlock Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Endring av skala:"/>
+                    <TextBlock Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="2" FontSize="15" FontFamily="Segoe UI" Text="Endring av skala:" Margin="0,10,0,0"/>
                     <Slider x:Name="sliderSkala" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" VerticalAlignment="Top" Width="300"
                             Minimum="0" Maximum="2.5" Value="{Binding Scale, Mode=TwoWay}" TickFrequency="0.1" IsSnapToTickEnabled="True"/>
                 </Grid>

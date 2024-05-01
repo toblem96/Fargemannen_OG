@@ -20,7 +20,7 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="20" FontFamily="Artifakt Element Heavy" Text="Last opp filer:(NB pass op at alle er i samme koordinatsystem" Grid.ColumnSpan="2"/>
+        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="20" FontFamily="Artifakt Element Heavy" Text="Last opp filer(NB, pass på at alle er i samme koordinatsystem)" Grid.ColumnSpan="2"/>
         <!-- SOSI File Upload -->
         <Button Content="Last opp SOSI" Command="{Binding UploadSosiCommand}" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5"/>
         <TextBox Text="{Binding DisplaySosiFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="1" Grid.Column="1" Margin="5" Padding="3"/>
