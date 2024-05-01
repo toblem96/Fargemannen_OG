@@ -158,7 +158,7 @@ namespace Fargemannen.ViewModel
                 }
             }
         }
-        private string _BergmodellLagNavn = "Bergmodell";
+        private string _BergmodellLagNavn = "Bergmodell_Lag";
 
         public string BergmodellLagNavn
         {
@@ -340,8 +340,8 @@ namespace Fargemannen.ViewModel
 
         private void FetchValues()
         {
-            MinVerdiXY = lengdeVerdierXY.Min();
-            MaxVerdiXY = lengdeVerdierXY.Max();
+            MinVerdiXY = Math.Round(lengdeVerdierXY.Min());
+            MaxVerdiXY = Math.Round(lengdeVerdierXY.Max());
         }
 
         public void RecalculateTotalPercentage()
@@ -576,7 +576,7 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                   //UpdateLayerColor(Navn, Farge);
+                   UpdateLayerColor(Navn, Farge);
                 }
             }
         }
@@ -644,8 +644,17 @@ namespace Fargemannen.ViewModel
 
        private void CalculateAndUpdatePercentage()
         {
+            List<double> lengdeVerdier = new List<double>();
+
+            if (Model.DukXYModel.VerdierZ.Count == 0)
+            {
+                lengdeVerdier = Model.AnalyseXYModel.lengdeVerdier;
+            }
+            else
+            {
+                lengdeVerdier = Model.DukXYModel.VerdierZ.Where(v => v != -999).ToList();
+            }
             
-            var lengdeVerdier = Model.DukXYModel.VerdierXY;
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
                 Prosent = 0;

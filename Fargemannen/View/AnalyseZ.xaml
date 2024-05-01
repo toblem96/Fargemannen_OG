@@ -165,7 +165,7 @@ FontSize="15"  FontFamily="Artifakt Element Medium" Margin="35,150,0,10"/>
                     Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
                     
                     <Button Content="Lag Legend" Grid.Column="2" Grid.Row="3" Command="{Binding KjørLegendZCommand}" Margin="0,25,0,0" Width="120" Height="40"/>
-                    <Button Content="Maker Usikkerhet" Command="{Binding MarkerBergCommand}" Grid.Column="2" Grid.Row="7" Width="120" Height="40" Margin="0,25,0,0" />
+                    <Button Content="Marker Usikkerhet" Command="{Binding MarkerBergCommand}" Grid.Column="2" Grid.Row="7" Width="120" Height="40" Margin="0,25,0,0" />
                 </Grid>
             </TabItem>
         </TabControl>

@@ -65,7 +65,7 @@
                         
                         <TextBox Text="{Binding CustomProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" IsEnabled="{Binding UseCustomProject}" Margin="0,5,0,0" HorizontalAlignment="Left"/>
 
-                        <TextBlock Text="Borenummer:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,15,0,6"/>
+                        <TextBlock Text="Borrenummer:" FontSize="15" FontFamily="Artifakt Element Medium" Margin="0,15,0,6"/>
                         <RadioButton Content="SOSI nummer" GroupName="NummerType" IsChecked="{Binding UseSOSINumber, Mode=TwoWay}"/>
                         <RadioButton Content="PDF nummer" GroupName="NummerType" IsChecked="{Binding UsePDFNumber, Mode=TwoWay}"/>
                     </StackPanel>

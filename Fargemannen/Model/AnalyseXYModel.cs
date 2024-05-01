@@ -35,6 +35,7 @@ namespace Fargemannen.Model
 
             Editor ed = doc.Editor;
             // Be brukeren om å velge en polyline
+            Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Velg en firkant som avgrenser området som skal analyseres");
             PromptEntityOptions peo = new PromptEntityOptions("\nVelg en firkant (Polyline): ");
             peo.SetRejectMessage("\nObjektet må være en Polyline.");
             peo.AddAllowedClass(typeof(Autodesk.AutoCAD.DatabaseServices.Polyline), true);
@@ -188,7 +189,7 @@ namespace Fargemannen.Model
 
 
 
-            string melding = $"Lager rutenett på {ruteStr}m x {ruteStr}m er generert";
+            string melding = $"Rutenett på {ruteStr}m x {ruteStr}m generers og analyse kjøres";
 
             Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog(melding);
         }

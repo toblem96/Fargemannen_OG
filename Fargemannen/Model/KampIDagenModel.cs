@@ -29,7 +29,7 @@ namespace Fargemannen.Model
 
             Database db = doc.Database;
 
-            // La brukeren velge en lukket polyline
+            Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Velg en LUKKET polylinje");
             PromptEntityOptions opt = new PromptEntityOptions("\nVelg en lukket polyline:");
             opt.SetRejectMessage("\nKun lukkede polylines er tillatt.");
             opt.AddAllowedClass(typeof(Polyline), false);

@@ -51,7 +51,7 @@ namespace Fargemannen.ViewModel
         private string _reportName;
         private int _intValue;
         private string _savePath;
-        private string _BergmodellLagNavn = "Bergmodell";
+        private string _BergmodellLagNavn = "Bergmodell_Lag";
         private string _TerrengModellLagNavn = "C-TOPO-GRID";
 
         public string ReportName

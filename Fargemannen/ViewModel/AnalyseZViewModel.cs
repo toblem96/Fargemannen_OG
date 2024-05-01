@@ -31,7 +31,7 @@ namespace Fargemannen.ViewModel
         private double _maxVerdiZ;
         private double _totalProsent;
         private string _BergmodellNavn = "Bergmodell";
-        private string _BergmodellLagNavn = "Bergmodell";
+        private string _BergmodellLagNavn = "Bergmodell_Lag";
         private string _TerrengModellLagNavn = "C-TOPO-GRID";
         public List<double> VerdierZ;
         public List<PunktInfo> PunkterMedInfoZ;
@@ -603,7 +603,7 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                    /*
+                    
                     if (!string.IsNullOrEmpty(Navn))
                     {
                         Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -630,7 +630,7 @@ namespace Fargemannen.ViewModel
                             }
                         }
                     }
-                    */
+                    
                 }
             }
         }
