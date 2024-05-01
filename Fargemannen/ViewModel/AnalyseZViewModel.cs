@@ -34,7 +34,8 @@ namespace Fargemannen.ViewModel
         private string _BergmodellNavn = "Bergmodell";
         private string _BergmodellLagNavn = "Bergmodell";
         private string _TerrengModellLagNavn = "C-TOPO-GRID";
-       
+        public List<double> VerdierZ;
+
 
 
         private static AnalyseZViewModel _instance;
@@ -68,6 +69,52 @@ namespace Fargemannen.ViewModel
             {
                 _sonderingTypesZ = value;
                 OnPropertyChanged(nameof(SonderingTypesZ)); //ENDRET HER: Sørger for at endringer i listen oppdaterer UI
+            }
+        }
+
+        //Type visualiseirng 
+        private bool _isFargekartSelected = true;
+        private bool _isMeshDukSelected = false;
+
+        public bool IsFargekartSelected
+        {
+            get => _isFargekartSelected;
+            set
+            {
+                if (_isFargekartSelected != value)
+                {
+                    _isFargekartSelected = value;
+                    OnPropertyChanged(nameof(IsFargekartSelected));
+
+                    if (value) // Hvis Fargekart er valgt, sett Mesh Duk til false
+                    {
+                        if (_isMeshDukSelected) // Unngå rekursiv oppdatering hvis allerede false
+                        {
+                            IsMeshDukSelected = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool IsMeshDukSelected
+        {
+            get => _isMeshDukSelected;
+            set
+            {
+                if (_isMeshDukSelected != value)
+                {
+                    _isMeshDukSelected = value;
+                    OnPropertyChanged(nameof(IsMeshDukSelected));
+
+                    if (value) // Hvis Mesh Duk er valgt, sett Fargekart til false
+                    {
+                        if (_isFargekartSelected) // Unngå rekursiv
+                        {
+                            IsFargekartSelected = false;
+                        }
+                    }
+                }
             }
         }
         public int MinYear
@@ -175,13 +222,16 @@ namespace Fargemannen.ViewModel
             get => _totalProsent;
             set
             {
-                if (_totalProsent != value)
+                double roundedValue = Math.Round(value);
+                if (_totalProsent != roundedValue)
                 {
-                    _totalProsent = value;
+                    _totalProsent = roundedValue;
                     OnPropertyChanged(nameof(TotalProsent));
                 }
             }
         }
+
+
 
         public ICommand UpdatePercentagesCommand { get; private set; }
         public ICommand VelgAnalyseZCommand { get; private set; }
@@ -211,9 +261,9 @@ namespace Fargemannen.ViewModel
             KjørFargekartCommand = new RelayCommand(LagFargekart);
             KjørLegendZCommand = new RelayCommand(LagLegend);
 
-            UpdateIntervalsAndCalculatePercentages();
+            //UpdateIntervalsAndCalculatePercentages();
 
-            UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
+            //UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
 
             foreach (var intervall in IntervallerZ)
             {
@@ -313,7 +363,7 @@ namespace Fargemannen.ViewModel
         private void UpdateIntervalsAndCalculatePercentages()
         {
             // Filtrer ut -999 verdier fra VerdierZ
-            var lengdeVerdier = Fargemannen.Model.AnalyseZModel.VerdierZ.Where(v => v != -999).ToList();
+            var lengdeVerdier = VerdierZ.Where(v => v != -999).ToList();
 
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
@@ -388,18 +438,26 @@ namespace Fargemannen.ViewModel
 
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
 
-
-            Fargemannen.Model.AnalyseZModel.Start(punkterMesh, RuteStørresle, TerrengModellLagNavn, BergmodellLagNavn);
-            UpdateIntervalsAndCalculatePercentages();
-            FetchValues();
-
-            var sortedValues = Fargemannen.Model.AnalyseZModel.VerdierZ.OrderBy(x => x).ToList();
-
-            // Print hver verdi på en ny linje i AutoCAD's kommandolinje
-            foreach (double l in sortedValues)
+            if(IsFargekartSelected)
             {
-                ed.WriteMessage($"\n{l:F2}");  // Formaterer tall til 2 desimaler for bedre leselighet
+                Fargemannen.Model.AnalyseZModel.Start(punkterMesh, RuteStørresle, TerrengModellLagNavn, BergmodellLagNavn);
+                UpdateIntervalsAndCalculatePercentages();
+                FetchValues();
+                VerdierZ = AnalyseZModel.VerdierZ;
             }
+            else
+            {
+               
+                string analysetype = "Z";
+                DukXYModel Duk = new DukXYModel();
+                Duk.KjørDukPåXY(pointsToSymbol, BergmodellLagNavn, TerrengModellLagNavn, analysetype);
+                VerdierZ = Model.DukXYModel.VerdierZ;
+                UpdateIntervalsAndCalculatePercentages();
+                FetchValues();
+
+            }
+         
+
 
         }
 
@@ -414,9 +472,18 @@ namespace Fargemannen.ViewModel
 
             var intervallListe = AnalyseZViewModel.Instance.GetIntervallListe();
 
-            Model.AnalyseZModel.PlasserFirkanterIIntervallLayersOgFyllMedFargeZ(SliderValue, intervallListe);
+            if(IsFargekartSelected)
+            {
+                Model.AnalyseZModel.PlasserFirkanterIIntervallLayersOgFyllMedFargeZ(SliderValue, intervallListe);
 
-            ed.WriteMessage($"{SliderValue}");
+            }
+            else
+            {
+                DukXYModel Duk = new DukXYModel();
+                Duk.FargeMeshZ(VerdierZ, BergmodellLagNavn, intervallListe);
+            }
+
+          
         }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
@@ -498,9 +565,11 @@ namespace Fargemannen.ViewModel
             get => _prosent;
             set
             {
-                if (_prosent != value)
+                // Rund av verdien til nærmeste hele tall før du sammenligner og setter den
+                double roundedValue = Math.Round(value);
+                if (_prosent != roundedValue)
                 {
-                    _prosent = value;
+                    _prosent = roundedValue;
                     OnPropertyChanged(nameof(Prosent));
                 }
             }
@@ -587,7 +656,7 @@ namespace Fargemannen.ViewModel
         private void CalculateAndUpdatePercentage()
         {
             // Fjern alle verdier som er -999 fra datasettet før beregning
-            var lengdeVerdier = Fargemannen.Model.AnalyseZModel.VerdierZ.Where(v => v != -999).ToList();
+            var lengdeVerdier = Model.DukXYModel.VerdierZ.Where(v => v != -999).ToList();
 
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {

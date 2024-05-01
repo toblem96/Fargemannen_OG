@@ -238,6 +238,7 @@
     <Compile Include="Model\GetMeshData.cs" />
     <Compile Include="Model\ItemCheck.cs" />
     <Compile Include="Model\LegdenModel.cs" />
+    <Compile Include="Model\MarkeringAvBergModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />
     <Compile Include="Model\SymbolModel.cs" />
     <Compile Include="ProgressBar.cs">

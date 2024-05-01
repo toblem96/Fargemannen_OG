@@ -122,6 +122,11 @@ namespace Fargemannen.Model
             doc.Editor.WriteMessage($"Koden kjørte hele veien");
         }
 
+        public void FargeMeshZ(List<double> closestDistances, string layerBergmodell, List<ViewModel.IntervallZ> intervaller)
+        {
+            ColorizeTinSurfaceTrianglesZ(closestDistances, layerBergmodell, intervaller);
+        }
+
         public void FargeMesh(List<double> closestDistances, string layerBergmodell, List<ViewModel.Intervall> intervaller)
         {
             ColorizeTinSurfaceTriangles(closestDistances, layerBergmodell, intervaller);
@@ -176,6 +181,105 @@ namespace Fargemannen.Model
         }
 
         private static void ProcessLayerAndHatch(LayerTable lt, BlockTableRecord btr, Transaction acTrans, ViewModel.Intervall intervall, TinSurfaceTriangle triangle)
+        {
+            ObjectId layerId;
+
+            // Sjekker om laget allerede eksisterer i LayerTable
+            if (!lt.Has(intervall.Navn))
+            {
+                lt.UpgradeOpen();  // Oppgraderer LayerTable til skrivemodus
+                LayerTableRecord ltr = new LayerTableRecord
+                {
+                    Name = intervall.Navn  // Setter navnet på det nye laget
+                };
+                layerId = lt.Add(ltr);
+                acTrans.AddNewlyCreatedDBObject(ltr, true);  // Legger til det nye laget i transaksjonen
+            }
+            else
+            {
+                layerId = lt[intervall.Navn];  // Henter ObjectId for det eksisterende laget
+            }
+
+            LayerTableRecord ltrExisting = (LayerTableRecord)acTrans.GetObject(layerId, OpenMode.ForWrite);
+            ltrExisting.Color = Autodesk.AutoCAD.Colors.Color.FromColor(ConvertHexToDrawingColor(intervall.Farge));
+            ltrExisting.IsPlottable = true;  // Sørger for at laget er plottbart
+
+            // Oppretter en Polyline3d som definerer omkretsen av trianglet
+            Polyline3d pl = new Polyline3d(Poly3dType.SimplePoly, new Point3dCollection
+    {
+        triangle.Vertex1.Location,
+        triangle.Vertex2.Location,
+        triangle.Vertex3.Location,
+        triangle.Vertex1.Location  // Lukker polygonet ved å gjenta første punktet
+    }, true);
+
+            btr.AppendEntity(pl);
+            acTrans.AddNewlyCreatedDBObject(pl, true);
+            pl.LayerId = layerId;  // Setter Polyline til å være på det spesifikke laget
+
+            /*
+            // Oppretter et nytt Hatch-objekt
+            Hatch hatch = new Hatch();
+            btr.AppendEntity(hatch);
+            acTrans.AddNewlyCreatedDBObject(hatch, true);
+            hatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+            hatch.Associative = true;  // Gjør hatchingen assosiativ til boundary (Polyline3d)
+            hatch.AppendLoop(HatchLoopTypes.Outermost, new ObjectIdCollection(new ObjectId[] { pl.ObjectId }));
+            hatch.EvaluateHatch(true);  // Beregner og genererer hatching basert på definerte loops
+            hatch.Layer = ltrExisting.Name;  // Setter hatchets lag til intervallens lag
+            hatch.Color = Autodesk.AutoCAD.Colors.Color.FromColor(intervall.Farge); // Setter farge på hatch (valgfritt hvis lagfarge er tilstrekkelig)
+            */
+
+        }
+        public static void ColorizeTinSurfaceTrianglesZ(List<double> closestDistances, string layerBergmodell, List<ViewModel.IntervallZ> intervaller)
+        {
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            if (acDoc == null)
+            {
+                Application.ShowAlertDialog("Ingen aktivt dokument funnet. Åpne eller opprett et nytt dokument før du starter.");
+                return;
+            }
+
+            Database acCurDb = acDoc.Database;
+            ProgressWindow progressWindow = new ProgressWindow(closestDistances.Count);
+
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                using (acDoc.LockDocument())
+                {
+                    TinSurface bergmodell = GetTinSurfaceFromLayerName(layerBergmodell, acTrans, acCurDb);
+                    List<TinSurfaceTriangle> triangleList = bergmodell.GetTriangles(false).ToList();
+
+                    LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
+                    BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
+
+                    int index = 0;
+
+                    foreach (var lengde in closestDistances)
+                    {
+                        TinSurfaceTriangle triangle = triangleList[index];
+
+
+                        foreach (var intervall in intervaller)
+                        {
+                            if (lengde >= intervall.StartVerdi && lengde <= intervall.SluttVerdi)
+                            {
+
+                                ProcessLayerAndHatchZ(lt, btr, acTrans, intervall, triangle);
+                                break; // Exit the loop once the correct interval is processed
+                            }
+                        }
+                        index++;
+                    }
+
+                    acTrans.Commit();
+                }
+            }
+
+            progressWindow.Complete();  // Lukker fremdriftsindikatoren etter ferdigstillelse
+        }
+
+        private static void ProcessLayerAndHatchZ(LayerTable lt, BlockTableRecord btr, Transaction acTrans, ViewModel.IntervallZ intervall, TinSurfaceTriangle triangle)
         {
             ObjectId layerId;
 
