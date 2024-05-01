@@ -65,6 +65,7 @@
                         
                     </StackPanel>
                     <Button Command="{Binding LagBergmodellCommand}" Content="Generer Bergmodell"  Grid.Column="4" Grid.Row="7" Height="40" Width="120"  Margin="0,3,0,0"/>
+                    <Button Command="{Binding KampCommand}" Content="Kamp Bergmodell"  Grid.Column="4" Grid.Row="8" Height="40" Width="120"  Margin="0,3,0,0"/>
                     <RadioButton Content="Fargekart" GroupName="AnalyseType" IsChecked="{Binding IsFargekartSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="7" Margin="0,20,0,0" />
                     <RadioButton Content="Mesh duk" GroupName="AnalyseType" IsChecked="{Binding IsMeshDukSelected, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" />
                     <Button Grid.Column="1" Grid.Row="9" Content="Velg Analyseområde" Command="{Binding VelgAnalyseZCommand}"  Margin="0,3,0,0" Height="40"/>
@@ -159,6 +160,7 @@ CommandParameter="{Binding}" Grid.Column="0" Grid.Row="1" />
              Width="250"/>
                     <Button Content="Lag Fargekart" Command="{Binding KjørFargekartCommand}"
                     Grid.Column="0" Grid.Row="3" Margin="0,25,0,0" Width="120" Height="40"/>
+                    <Button Content="Maker noe" Command="{Binding MarkerBergCommand}" Grid.Column="3" Grid.Row="8" Width="130" HorizontalAlignment="Left"/>
                     <Button Content="Lag Legend" Grid.Column="2" Grid.Row="3" Command="{Binding KjørLegendZCommand}" Margin="0,25,0,0" Width="120" Height="40"/>
                 </Grid>
             </TabItem>

@@ -62,7 +62,7 @@ namespace Fargemannen.Model
 
                 // Hvis kriteriene er oppfylt, fortsett med å dele firkanten
                 DelFirkantI1mX1m(pl, ruteStr, borPunkter);
-                BeregnVerdier();
+                
             }
         }
 
@@ -194,17 +194,9 @@ namespace Fargemannen.Model
         }
 
 
-        public static void BeregnVerdier()
-        {
+    
 
-            minVerdiXY = Math.Round(lengdeVerdier.Min());
-            maxVerdiXY = Math.Round(lengdeVerdier.Max());
-            gjennomsnittVerdiXY = Math.Round(lengdeVerdier.Average());
-
-
-        }
-
-        public static void PlasserFirkanterIIntervallLayersOgFyllMedFarge(double gjennomsiktighet, List<Fargemannen.ViewModel.Intervall> intervaller)
+        public static void PlasserFirkanterIIntervallLayersOgFyllMedFarge(double gjennomsiktighet, List<Fargemannen.ViewModel.Intervall> intervaller, List<double> VeriderXY)
         {
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             if (acDoc == null)
@@ -214,7 +206,7 @@ namespace Fargemannen.Model
             }
 
             Database acCurDb = acDoc.Database;
-            ProgressWindow progressWindow = new ProgressWindow(lengdeVerdier.Count);  // Set up the progress window with the number of steps equal to the number of lengths
+            ProgressWindow progressWindow = new ProgressWindow(VeriderXY.Count);  // Set up the progress window with the number of steps equal to the number of lengths
 
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
@@ -230,7 +222,7 @@ namespace Fargemannen.Model
                     int processedItems = 0;
                     try
                     {
-                        foreach (var lengde in lengdeVerdier)
+                        foreach (var lengde in VeriderXY)
                         {
                             Autodesk.AutoCAD.DatabaseServices.Polyline pl = MiniPlList[processedItems];
                             foreach (var intervall in intervaller)

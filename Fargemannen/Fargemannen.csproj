@@ -237,6 +237,7 @@
     <Compile Include="Model\EXCEL.cs" />
     <Compile Include="Model\GetMeshData.cs" />
     <Compile Include="Model\ItemCheck.cs" />
+    <Compile Include="Model\KampIDagenModel.cs" />
     <Compile Include="Model\LegdenModel.cs" />
     <Compile Include="Model\MarkeringAvBergModel.cs" />
     <Compile Include="Model\SymbolHandlers.cs" />

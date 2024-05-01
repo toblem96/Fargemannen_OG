@@ -33,6 +33,7 @@ namespace Fargemannen.ViewModel
         private double _maxVerdiXY;
         private double _totalProsent;
         public List<double> lengdeVerdierXY; 
+        public List<PunktInfo> PunkterMedInfo;
 
 
 
@@ -206,10 +207,9 @@ namespace Fargemannen.ViewModel
             get => _totalProsent;
             set
             {
-                double roundedValue = Math.Round(value);
-                if (_totalProsent != roundedValue)
+                if (_totalProsent != value)
                 {
-                    _totalProsent = roundedValue;
+                    _totalProsent = value;
                     OnPropertyChanged(nameof(TotalProsent));
                 }
             }
@@ -221,8 +221,9 @@ namespace Fargemannen.ViewModel
         public ICommand KjørFargekartCommand { get; private set; }
         public ICommand KjørLegendCommand { get; private set; }
         public ICommand KjørDukCommand { get; private set; }
+        public ICommand MarkerBergCommand { get; private set; }
 
-
+        
         public AnalyseXYViewModel()
         {
 
@@ -247,7 +248,8 @@ namespace Fargemannen.ViewModel
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
             KjørFargekartCommand = new RelayCommand(LagFargekart);
             KjørLegendCommand = new RelayCommand(LagLegend);
-            KjørDukCommand = new RelayCommand(KjørDuk);
+        
+            MarkerBergCommand = new RelayCommand(KjørMarkeringAvBerg);
             UpdateIntervalsAndCalculatePercentages();
 
             UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
@@ -268,28 +270,12 @@ namespace Fargemannen.ViewModel
 
 
         }
-        public void KjørDuk() 
+
+        private void KjørMarkeringAvBerg()
         {
-            var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
-            var selectedTypesXY = SonderingTypesXY.Where(x => x.IsChecked).Select(x => x.Name).ToList();
-
-
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Editor ed = doc.Editor;
-
-            List<PunktInfo> pointsToSymbol = new List<PunktInfo>();
-            List<Point3d> punkterMesh = new List<Point3d>();
-            string NummerType = "";
-            string ProjectType = "";
-
-
-            Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Analyse XY");
-            ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesXY, NummerType, ProjectType);
-
-            DukXYModel Duk = new DukXYModel();
-            //Duk.KjørDukPåXY(pointsToSymbol, intervallListe, BergmodellLagNavn);
-
+            Model.MarkeringAvBergModel.MakeringBerg(PunkterMedInfo, 3, RuteStørresle, "XY");
         }
+
         public void LagLegend() 
         {
             var intervallListe = AnalyseXYViewModel.Instance.GetIntervallListe();
@@ -360,8 +346,9 @@ namespace Fargemannen.ViewModel
 
         public void RecalculateTotalPercentage()
         {
-            TotalProsent = Math.Round(Intervaller.Sum(intervall => intervall.Prosent));
+            TotalProsent = Intervaller.Sum(intervall => intervall.Prosent);
             OnPropertyChanged(nameof(TotalProsent)); // Sørger for å oppdatere UI med den nye totalen
+         
         }
 
      
@@ -396,7 +383,7 @@ namespace Fargemannen.ViewModel
                 }
 
                 int countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x <= intervall.SluttVerdi);
-                intervall.Prosent = Math.Round((double)countInInterval / totalLengder * 100);
+                intervall.Prosent = (double)countInInterval / totalLengder * 100;
 
                 intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Oppdaterer UI for hver endring
                 RecalculateTotalPercentage();
@@ -421,6 +408,8 @@ namespace Fargemannen.ViewModel
 
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesXY, NummerType, ProjectType);
 
+            PunkterMedInfo = pointsToSymbol;
+
             if (IsFargekartSelected)
             {
                 var PunkterMesh = NullstillZVerdierOgLagreIAnalyseListe(punkterMesh);
@@ -430,8 +419,7 @@ namespace Fargemannen.ViewModel
                 lengdeVerdierXY = AnalyseXYModel.lengdeVerdier;
                 UpdateIntervalsAndCalculatePercentages();
                 FetchValues();
-                var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
-                ed.WriteMessage(Fargemannen.Model.AnalyseXYModel.lengdeVerdier.Count.ToString());
+              
 
             }
             else 
@@ -443,7 +431,7 @@ namespace Fargemannen.ViewModel
                 lengdeVerdierXY = Model.DukXYModel.VerdierXY;
                 UpdateIntervalsAndCalculatePercentages();
                 FetchValues();
-                var sortedValues = Fargemannen.Model.AnalyseXYModel.lengdeVerdier.OrderBy(x => x).ToList();
+                
             }
         }
         public List<Intervall> GetIntervallListe()
@@ -461,7 +449,7 @@ namespace Fargemannen.ViewModel
 
             if (IsFargekartSelected)
             {
-                Model.AnalyseXYModel.PlasserFirkanterIIntervallLayersOgFyllMedFarge(SliderValue, intervallListe);
+                Model.AnalyseXYModel.PlasserFirkanterIIntervallLayersOgFyllMedFarge(SliderValue, intervallListe, lengdeVerdierXY);
             }
             else
             {
@@ -546,7 +534,7 @@ namespace Fargemannen.ViewModel
                 {
                     _startVerdi = value;
                     OnPropertyChanged(nameof(StartVerdi));
-                    //CalculateAndUpdatePercentage();
+                    CalculateAndUpdatePercentage();
                 }
             }
         }
@@ -570,11 +558,9 @@ namespace Fargemannen.ViewModel
             get => _prosent;
             set
             {
-                // Rund av verdien til nærmeste hele tall før du sammenligner og setter den
-                double roundedValue = Math.Round(value);
-                if (_prosent != roundedValue)
+                if (_prosent != value)
                 {
-                    _prosent = roundedValue;
+                    _prosent = value;
                     OnPropertyChanged(nameof(Prosent));
                 }
             }

@@ -37,13 +37,23 @@ namespace Fargemannen.Model
 {
     public class MarkeringAvBergModel
     {
-        public static void KjørMakeringAvBerg(List<PunktInfo> punterInfo, double minBor, double RuteStørresle)
+        public static void MakeringBerg(List<PunktInfo> punterInfo, double minBor, double RuteStørresle, string analyseType)
         {
+            List<DBPoint> MidPoints = new List<DBPoint>();    
+            if(analyseType == "XY")
+            {
+                MidPoints = Model.AnalyseXYModel.MidPoints;
+            }
+            else
+            {
+                MidPoints = Model.AnalyseZModel.MidPointsZ;
+            }
+
 
             var punterMedInfo = LageDic(punterInfo, minBor);
-            FinnOgLagSirkler(punterMedInfo, RuteStørresle);
-            //Lage funk for DIC
-            //Lage Funk for nørmeste (Lage funk får å genere geometri)
+            FinnOgLagSirkler(punterMedInfo, RuteStørresle, MidPoints);
+      
+
 
 
 
@@ -63,7 +73,7 @@ namespace Fargemannen.Model
 
             return dict;
         }
-        public static void FinnOgLagSirkler(List<Dictionary<Point3d, bool>> punktData, double diameter)
+        public static void FinnOgLagSirkler(List<Dictionary<Point3d, bool>> punktData, double diameter, List<DBPoint> MidPoints)
         {
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
@@ -80,7 +90,9 @@ namespace Fargemannen.Model
                 acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                foreach (var midPoint in Analyse.MidPoints)
+
+
+                foreach (var midPoint in MidPoints)
                 {
                     Point3d nearestPoint = FindNearestPoint(midPoint.Position, punktData);
                     if (!punktData.First(d => d.ContainsKey(nearestPoint))[nearestPoint])  // Sjekker om verdien er false
@@ -128,5 +140,3 @@ namespace Fargemannen.Model
     }
 }
 
-    }
-}

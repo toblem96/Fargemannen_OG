@@ -27,7 +27,6 @@ namespace Fargemannen.ViewModel
         private ObservableCollection<IntervallZ> _intervallerZ = new ObservableCollection<IntervallZ>();
         private int _minYear = 1990;
         private int _RuteStørresle = 1;
-        private double _gjennomsnittVerdiZ;
         private double _minVerdiZ;
         private double _maxVerdiZ;
         private double _totalProsent;
@@ -35,6 +34,7 @@ namespace Fargemannen.ViewModel
         private string _BergmodellLagNavn = "Bergmodell";
         private string _TerrengModellLagNavn = "C-TOPO-GRID";
         public List<double> VerdierZ;
+        public List<PunktInfo> PunkterMedInfoZ;
 
 
 
@@ -222,10 +222,9 @@ namespace Fargemannen.ViewModel
             get => _totalProsent;
             set
             {
-                double roundedValue = Math.Round(value);
-                if (_totalProsent != roundedValue)
+                if (_totalProsent != value)
                 {
-                    _totalProsent = roundedValue;
+                    _totalProsent = value;
                     OnPropertyChanged(nameof(TotalProsent));
                 }
             }
@@ -241,8 +240,9 @@ namespace Fargemannen.ViewModel
 
         public ICommand LagBergmodellCommand { get; private set; }
         public ICommand KjørLegendZCommand { get; private set; }
+        public ICommand MarkerBergCommand { get; private set; }
 
-
+        public ICommand KampCommand { get; private set; }
         public AnalyseZViewModel()
         {
 
@@ -260,10 +260,10 @@ namespace Fargemannen.ViewModel
             OppdaterTotalProsetCommand = new RelayCommand(RecalculateTotalPercentage);
             KjørFargekartCommand = new RelayCommand(LagFargekart);
             KjørLegendZCommand = new RelayCommand(LagLegend);
+            MarkerBergCommand = new RelayCommand(KjørMarkeringAvBerg);
+            KampCommand = new RelayCommand(KjørKamp);
 
-            //UpdateIntervalsAndCalculatePercentages();
-
-            //UpdatePercentagesCommand = new RelayCommand(UpdateIntervalsAndCalculatePercentages);
+            UpdateIntervalsAndCalculatePercentages();
 
             foreach (var intervall in IntervallerZ)
             {
@@ -283,6 +283,15 @@ namespace Fargemannen.ViewModel
 
 
         }
+        private void KjørKamp()
+        {
+            Model.KampIDagenModel.SelectClosedPolylineAndManipulateSurface(BergmodellLagNavn, TerrengModellLagNavn);
+        }
+        private void KjørMarkeringAvBerg()
+        {
+            Model.MarkeringAvBergModel.MakeringBerg(PunkterMedInfoZ, 3, RuteStørresle, "Z");
+        }
+
         public void LagLegend()
         {
             var intervallListeZ = AnalyseZViewModel.Instance.GetIntervallListe();
@@ -347,8 +356,8 @@ namespace Fargemannen.ViewModel
         private void FetchValues()
         {
 
-            MinVerdiZ = Fargemannen.Model.AnalyseZModel.minVerdiZ;
-            MaxVerdiZ = Fargemannen.Model.AnalyseZModel.maxVerdiZ;
+            MinVerdiZ = Math.Round(Fargemannen.Model.AnalyseZModel.minVerdiZ);
+            MaxVerdiZ = Math.Round(Fargemannen.Model.AnalyseZModel.maxVerdiZ);
 
             if(MinVerdiZ < 0)
             {
@@ -362,7 +371,13 @@ namespace Fargemannen.ViewModel
         }
         private void UpdateIntervalsAndCalculatePercentages()
         {
-            // Filtrer ut -999 verdier fra VerdierZ
+
+            if (VerdierZ == null)
+            {
+          
+                return;  // Avbryt videre behandling siden VerdierZ er null
+            }
+
             var lengdeVerdier = VerdierZ.Where(v => v != -999).ToList();
 
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
@@ -397,7 +412,8 @@ namespace Fargemannen.ViewModel
 
                 intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Oppdaterer UI for hver endring
                 RecalculateTotalPercentage();
-            }
+                }
+            
         }
 
         public void GenererBergmodell()
@@ -438,12 +454,15 @@ namespace Fargemannen.ViewModel
 
             ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
 
-            if(IsFargekartSelected)
+            PunkterMedInfoZ = pointsToSymbol;
+
+            if (IsFargekartSelected)
             {
                 Fargemannen.Model.AnalyseZModel.Start(punkterMesh, RuteStørresle, TerrengModellLagNavn, BergmodellLagNavn);
+                VerdierZ = AnalyseZModel.VerdierZ;
                 UpdateIntervalsAndCalculatePercentages();
                 FetchValues();
-                VerdierZ = AnalyseZModel.VerdierZ;
+                
             }
             else
             {
@@ -565,12 +584,11 @@ namespace Fargemannen.ViewModel
             get => _prosent;
             set
             {
-                // Rund av verdien til nærmeste hele tall før du sammenligner og setter den
-                double roundedValue = Math.Round(value);
-                if (_prosent != roundedValue)
+                if (_prosent != value)
                 {
-                    _prosent = roundedValue;
+                    _prosent = value;
                     OnPropertyChanged(nameof(Prosent));
+                    CalculateAndUpdatePercentage();
                 }
             }
         }
@@ -655,8 +673,17 @@ namespace Fargemannen.ViewModel
 
         private void CalculateAndUpdatePercentage()
         {
-            // Fjern alle verdier som er -999 fra datasettet før beregning
-            var lengdeVerdier = Model.DukXYModel.VerdierZ.Where(v => v != -999).ToList();
+            List<double> lengdeVerdier = new List<double>();
+            
+            if(Model.DukXYModel.VerdierZ.Count == 0)
+            {
+                lengdeVerdier = Model.AnalyseZModel.VerdierZ.Where(v => v != -999).ToList();
+            }
+            else
+            {
+                lengdeVerdier = Model.DukXYModel.VerdierZ.Where(v => v != -999).ToList();
+            }
+          
 
             if (lengdeVerdier == null || lengdeVerdier.Count == 0)
             {
