@@ -225,7 +225,12 @@ namespace Fargemannen
 
 
         }
-        [CommandMethod("DukPåMeshXYY")]
+
+
+
+
+
+    [CommandMethod("DukPåMeshXYY")]
         public void LagDukXY()
         {
             string metode = "XY";

@@ -18,6 +18,7 @@ using System.Drawing;
 using System;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Colors;
+using Microsoft.ApplicationInsights;
 
 namespace Fargemannen.ViewModel
 {
@@ -25,7 +26,7 @@ namespace Fargemannen.ViewModel
     {
         private ObservableCollection<SonderingTypeZ> _sonderingTypesZ;
         private ObservableCollection<IntervallZ> _intervallerZ = new ObservableCollection<IntervallZ>();
-        private int _minYear = 1990;
+        private int _minYear = 1800;
         private int _RuteStørresle = 1;
         private double _minVerdiZ;
         private double _maxVerdiZ;
@@ -285,19 +286,83 @@ namespace Fargemannen.ViewModel
         }
         private void KjørKamp()
         {
-            Model.KampIDagenModel.SelectClosedPolylineAndManipulateSurface(BergmodellLagNavn, TerrengModellLagNavn);
+            var telemetryClient = new TelemetryClient();  // Pass inn din Instrumentation Key her om nødvendig
+
+            try
+            {
+                // Spor bruk av knappen
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Knapp Kamp");
+
+                Model.KampIDagenModel.SelectClosedPolylineAndManipulateSurface(BergmodellLagNavn, TerrengModellLagNavn);
+            }
+            catch (Exception ex)
+            {
+                var properties = new Dictionary<string, string>
+                {
+                   { "Error Message", ex.Message },
+                    { "StackTrace", ex.StackTrace },
+                    { "Function Name", nameof(KjørKamp)}
+                };
+                Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
+
+
+
+
+            }
         }
         private void KjørMarkeringAvBerg()
         {
-            Model.MarkeringAvBergModel.MakeringBerg(PunkterMedInfoZ, 3, RuteStørresle, "Z");
+            var telemetryClient = new TelemetryClient();
+
+            try
+            {
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Knapp MarkeringBergZ");
+                Model.MarkeringAvBergModel.MakeringBerg(PunkterMedInfoZ, 3, RuteStørresle, "Z");
+            }
+            catch (Exception ex)
+            {
+                var properties = new Dictionary<string, string>
+                {
+                   { "Error Message", ex.Message },
+                    { "StackTrace", ex.StackTrace },
+                    { "Function Name", nameof(KjørMarkeringAvBerg)}
+                };
+                Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
+
+
+
+
+            }
+
+
         }
 
         public void LagLegend()
         {
-            var intervallListeZ = AnalyseZViewModel.Instance.GetIntervallListe();
+           var intervallListeZ = AnalyseZViewModel.Instance.GetIntervallListe();
 
-            LegdenModel legdenModel = new LegdenModel();
-           legdenModel.VelgFirkantZ(intervallListeZ);
+            var telemetryClient = new TelemetryClient();
+
+            try
+            {
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Knapp LegendZ");
+
+
+                LegdenModel legdenModel = new LegdenModel();
+                legdenModel.VelgFirkantZ(intervallListeZ);
+            }
+            catch (Exception ex)
+            {
+                var properties = new Dictionary<string, string>
+                {
+                   { "Error Message", ex.Message },
+                    { "StackTrace", ex.StackTrace },
+                    { "Function Name", nameof(LagLegend)}
+                };
+                Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
+
+            }
+
         }
 
         private void UpdateLayerTransparency(int transparencyPercent)
@@ -420,6 +485,7 @@ namespace Fargemannen.ViewModel
         {
             var selectedTypesZ = SonderingTypesZ.Where(x => x.IsChecked).Select(x => x.Name).ToList();
 
+            var telemetryClient = new TelemetryClient();
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
@@ -429,12 +495,25 @@ namespace Fargemannen.ViewModel
             string NummerType = "";
             string ProjectType = "";
 
+            try
+            {
+                Fargemannen.ApplicationInsights.AppInsights.TrackEvent("Knapp Bergmodell");
+                ed.WriteMessage(punkterMesh.Count.ToString());
+                ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
 
-            ed.WriteMessage(punkterMesh.Count.ToString());
-            ProsseseringAvFiler.HentPunkter(pointsToSymbol, punkterMesh, MinYear, selectedTypesZ, NummerType, ProjectType);
+                Fargemannen.Model.AnalyseZModel.GenererMeshFraPunkter(punkterMesh, BergmodellNavn, BergmodellLagNavn);
+            }
+            catch(Exception ex) 
+            {
+                var properties = new Dictionary<string, string>
+    {
+        { "Error Message", ex.Message },
+        { "StackTrace", ex.StackTrace },
+                    { "Function Name", nameof(GenererBergmodell) }
+    };
 
-            Fargemannen.Model.AnalyseZModel.GenererMeshFraPunkter(punkterMesh, BergmodellNavn, BergmodellLagNavn);
-
+                Fargemannen.ApplicationInsights.AppInsights.TrackException(ex, properties);
+            }
         }
 
         private void SetAnalyseZOmeråde()

@@ -42,9 +42,7 @@ namespace Fargemannen.Model
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
-
             Dictionary<string, int> boringCount = new Dictionary<string, int>();
-            var processor = new ProsseseringAvFiler();
 
             foreach (var punkt in pointsToSymbol)
             {
@@ -57,18 +55,12 @@ namespace Fargemannen.Model
                     boringCount[punkt.GBUMetode] = 1;
                 }
             }
-
             ed.WriteMessage("\nAntall forekomster av hver GBUMetode:\n");
             foreach (var pair in boringCount)
             {
                 ed.WriteMessage($"GBUMetode: {pair.Key}, Antall: {pair.Value}\n");
             }
-
-
         }
-
-
-
 
 
         public static void test(List<PunktInfo> pointsToSymbol, List<string> metoder, double minGrenseBerg, System.Windows.Media.Color selectedColor, System.Windows.Media.Color selectedColor_minBerg)
@@ -124,11 +116,11 @@ namespace Fargemannen.Model
                             string tempFile = System.IO.Path.GetTempFileName();
                             using (var fileStream = File.Create(tempFile))
                             {
-                                stream.CopyTo(fileStream);  // Copy the resource stream to a physical file
+                                stream.CopyTo(fileStream);  
                             }
 
                             databases[file.Key] = new Database(false, false);
-                            databases[file.Key].ReadDwgFile(tempFile, FileShare.Read, true, ""); // Use the temp file
+                            databases[file.Key].ReadDwgFile(tempFile, FileShare.Read, true, ""); 
                             blockRefs[file.Key] = db.Insert(tempFile, databases[file.Key], false);
 
                             //File.Delete(tempFile); // Clean up the temp file

@@ -25,7 +25,7 @@ namespace Fargemannen.ViewModel
     {
 
         private ObservableCollection<SonderingType> _sonderingTypes;
-        private int _minYear = 1990;
+        private int _minYear = 1800;
         private int _minDrillingDepth = 2;
         
         private Color _normalSymbolColor = Colors.Black;

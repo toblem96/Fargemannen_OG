@@ -26,7 +26,7 @@
         <TextBox Text="{Binding DisplaySosiFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="1" Grid.Column="1" Margin="5" Padding="3"/>
        
         <!-- SOSIDAGEN File Upload -->
-        <Button Content="Last opp SOSIDAGEN" Command="{Binding UploadSosidagenCommand}" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5"/>
+        <Button Content="Last opp Fjell i dagen fra SOSI" Command="{Binding UploadSosidagenCommand}" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5"/>
         <TextBox Text="{Binding DisplaySosidagenFilePath, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Grid.Row="2" Grid.Column="1" Margin="5" Padding="3"/>
 
         <!-- KOF File Upload -->

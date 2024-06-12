@@ -26,7 +26,7 @@ namespace Fargemannen.ViewModel
     {
         private ObservableCollection<SonderingTypeXY> _sonderingTypesXY;
         private ObservableCollection<Intervall> _intervaller = new ObservableCollection<Intervall>();
-        private int _minYear = 1990;
+        private int _minYear = 1800;
         private int _RuteStørresle = 1;
         private double _gjennomsnittVerdiXY;
         private double _minVerdiXY;
