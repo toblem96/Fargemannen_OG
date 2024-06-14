@@ -36,7 +36,7 @@ namespace Fargemannen
     internal class Rapport
     {
       
-
+        /*
         private static OpenAIAPI openAiApi;
         public static List<string> BoreMotoderBergmodell = new List<string>();
         public static int AntallBoringerBergmodell = 0;
@@ -254,6 +254,9 @@ namespace Fargemannen
 
 
         }
+
+
+        */
 
     }
 

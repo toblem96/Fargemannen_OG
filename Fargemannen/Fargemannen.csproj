@@ -220,9 +220,6 @@
     <Compile Include="Analyse.cs" />
     <Compile Include="AnalyseZ.cs" />
     <Compile Include="ApplicationInsights\AppInsights.cs" />
-    <Compile Include="DataHenter.xaml.cs">
-      <DependentUpon>DataHenter.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DukPåMesh.cs" />
     <Compile Include="EXsjekk.cs" />
     <Compile Include="GenRapport.xaml.cs">
@@ -230,7 +227,6 @@
     </Compile>
     <Compile Include="Intervall.cs" />
     <Compile Include="Legend.cs" />
-    <Compile Include="MakeringAvBerg.cs" />
     <Compile Include="Model\AnalyseXYModel.cs" />
     <Compile Include="Model\AnalyseZModel.cs" />
     <Compile Include="Model\DukXYModel.cs" />
@@ -245,13 +241,7 @@
     <Compile Include="ProgressBar.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Rapport.cs" />
-    <Compile Include="SecondWinAnalyseXY.xaml.cs">
-      <DependentUpon>SecondWinAnalyseXY.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SecondWinAnalyseZ.xaml.cs">
-      <DependentUpon>SecondWinAnalyseZ.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Kladd\Rapport.cs" />
     <Compile Include="Symboler\SecondWinSymbol.xaml.cs">
       <DependentUpon>SecondWinSymbol.xaml</DependentUpon>
     </Compile>
@@ -280,16 +270,10 @@
     <Compile Include="View\Symbols.xaml.cs">
       <DependentUpon>Symbols.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WinAnalyseXY.xaml.cs">
-      <DependentUpon>WinAnalyseXY.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Symboler\WinSymbol.xaml.cs">
       <DependentUpon>WinSymbol.xaml</DependentUpon>
     </Compile>
     <Compile Include="Kladd\X_Kladd_Civil3DPointCreator.cs" />
-    <Compile Include="WinBergModell.xaml.cs">
-      <DependentUpon>WinBergModell.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Kladd\X_kLADD.cs" />
     <Compile Include="Model\ProsseseringAvFiler.cs" />
     <Compile Include="PunktInfo.cs" />
@@ -315,19 +299,7 @@
     <EmbeddedResource Include="Resources\vingeboring.dwg" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DataHenter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="GenRapport.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SecondWinAnalyseXY.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SecondWinAnalyseZ.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -356,14 +328,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Symbols.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WinAnalyseXY.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WinBergModell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

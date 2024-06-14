@@ -31,83 +31,7 @@ namespace Fargemannen
     public class MyCommands
     {   
 
-        public static List<PunktInfo> symbolSjekk = new List<PunktInfo>();
 
-
-        [CommandMethod("AnalyseZ")]
-        public void HeloWorld()
-        {
-            // Oppretter en ny instans av MainWinSymbol Window
-            WinBergModell bergWindow = new WinBergModell();
-
-            // Oppretter en WindowInteropHelper for å sette eieren av WPF-vinduet
-            WindowInteropHelper helper = new WindowInteropHelper(bergWindow)
-            {
-                Owner = Application.MainWindow.Handle
-            };
-
-            // Viser WPF-vinduet
-            bergWindow.Show();
-        }
-
-
-
-
-        [CommandMethod("Symboler")]
-        public void Symboler()
-        {
-            // Oppretter en ny instans av MainWinSymbol Window
-            Symboler.WinSymbol symbolWindow = new Symboler.WinSymbol();
-
-            // Oppretter en WindowInteropHelper for å sette eieren av WPF-vinduet
-            WindowInteropHelper helper = new WindowInteropHelper(symbolWindow)
-            {
-                Owner = Application.MainWindow.Handle
-            };
-
-            // Viser WPF-vinduet
-            symbolWindow.Show();
-        }
-        [CommandMethod("AnalyseXY")]
-        public void AnalyseXY() 
-        {
-
-            WinAnalyseXY winAnalyseXY = new WinAnalyseXY();
-
-            WindowInteropHelper helper = new WindowInteropHelper(winAnalyseXY)
-            {
-                Owner = Application.MainWindow.Handle
-            };
-            winAnalyseXY.Show();
-        }
-
-        [CommandMethod("Rapport")]
-        public void Rapport()
-        {
-
-            GenRapport GenRapport = new GenRapport();
-
-            WindowInteropHelper helper = new WindowInteropHelper(GenRapport)
-            {
-                Owner = Application.MainWindow.Handle
-            };
-            GenRapport.Show();
-        }
-
-
-
-        [CommandMethod("Data")]
-        public void Data()
-        {
-
-            DataHenter DataHenter = new DataHenter();
-
-            WindowInteropHelper helper = new WindowInteropHelper(DataHenter)
-            {
-                Owner = Application.MainWindow.Handle
-            };
-            DataHenter.Show();
-        }
 
         [CommandMethod("Fargemannen")]
         public void KjørFargemannen()
@@ -121,10 +45,6 @@ namespace Fargemannen
             };
                 MainWindow.Show();
         }
-
-
-
-        
 
 
         [CommandMethod("PDFBRILLER")]
@@ -211,50 +131,6 @@ namespace Fargemannen
                 trans.Commit();
             }
         }
-
-
-
-
-        [CommandMethod("sjekkEXCEL")]
-      public void sjekkboring()
-        {
-
-            EXsjekk.kjørTestRapport();
-
-
-
-
-        }
-
-
-
-
-
-    [CommandMethod("DukPåMeshXYY")]
-        public void LagDukXY()
-        {
-            string metode = "XY";
-
-            DukPåMesh.KjørDukPåMesh(metode);
-
-
-
-
-        }
-        [CommandMethod("DukPåMeshZ")]
-        public void LagDukZ()
-        {
-
-            string metode = "Z";
-            DukPåMesh.KjørDukPåMesh(metode);
-
-
-
-
-        }
-
-
-
 
     }
 }

@@ -576,11 +576,11 @@ namespace Fargemannen.ViewModel
                     _farge = value;
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
-                   UpdateLayerColor(Navn, Farge);
+                  // UpdateLayerColor(Navn, Farge);
                 }
             }
         }
-
+        /*
         private void UpdateLayerColor(string layerName, string colorHex)
         {
             if (!string.IsNullOrEmpty(layerName))
@@ -605,6 +605,7 @@ namespace Fargemannen.ViewModel
                 }
             }
         }
+        */
 
         public SolidColorBrush Brush
         {

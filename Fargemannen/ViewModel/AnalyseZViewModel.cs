@@ -273,8 +273,8 @@ namespace Fargemannen.ViewModel
 
             // Ny metode for å re-regne intervallene
 
-
-            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_1", StartVerdi = 0, SluttVerdi = 10, Farge = "#f7e7b8" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_0", StartVerdi = -99999, SluttVerdi = 0, Farge = "#C0C0C0" });
+            IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_1", StartVerdi = 1, SluttVerdi = 10, Farge = "#f7e7b8" });
             IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_2", StartVerdi = 11, SluttVerdi = 20, Farge = "#e5cb97" });
             IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_3", StartVerdi = 11, SluttVerdi = 20, Farge = "#d1ad79" });
             IntervallerZ.Add(new IntervallZ { Navn = "IntervallZ_4", StartVerdi = 11, SluttVerdi = 20, Farge = "#ac7749" });
@@ -436,10 +436,8 @@ namespace Fargemannen.ViewModel
         }
         private void UpdateIntervalsAndCalculatePercentages()
         {
-
             if (VerdierZ == null)
             {
-          
                 return;  // Avbryt videre behandling siden VerdierZ er null
             }
 
@@ -457,28 +455,35 @@ namespace Fargemannen.ViewModel
             double minVerdi = lengdeVerdier.Min(); // Oppdaterer minVerdi til å være minimum av gyldige verdier
             double maxVerdi = lengdeVerdier.Max();
             double totalRange = maxVerdi - minVerdi + 1; // +1 for å inkludere siste verdi i intervall
-            double intervallStørrelse = Math.Floor(totalRange / IntervallerZ.Count);
+            double intervallStørrelse = Math.Floor(totalRange / (IntervallerZ.Count - 1));
 
             int totalLengder = lengdeVerdier.Count;
 
             for (int i = 0; i < IntervallerZ.Count; i++)
             {
                 var intervall = IntervallerZ[i];
-                intervall.StartVerdi = minVerdi + i * intervallStørrelse;
-                intervall.SluttVerdi = intervall.StartVerdi + intervallStørrelse - 0.1; // -0.1 for å ikke overlappe med neste intervall
-
-                if (i == IntervallerZ.Count - 1 && intervall.SluttVerdi < maxVerdi)
+                if (i == 0)
                 {
-                    intervall.SluttVerdi = maxVerdi; // Justerer siste intervall for å dekke alle verdier
+                    intervall.StartVerdi = 0;
+                    intervall.SluttVerdi = 0.5;
+                }
+                else
+                {
+                    intervall.StartVerdi = (i - 1) * intervallStørrelse + 1;
+                    intervall.SluttVerdi = i * intervallStørrelse;
+                    if (i == IntervallerZ.Count - 1 && intervall.SluttVerdi < maxVerdi)
+                    {
+                        intervall.SluttVerdi = maxVerdi; // Justerer siste intervall for å dekke alle verdier
+                    }
                 }
 
                 int countInInterval = lengdeVerdier.Count(x => x >= intervall.StartVerdi && x <= intervall.SluttVerdi);
                 intervall.Prosent = (double)countInInterval / totalLengder * 100;
 
                 intervall.OnPropertyChanged(nameof(Intervall.Prosent)); // Oppdaterer UI for hver endring
-                RecalculateTotalPercentage();
-                }
-            
+            }
+
+            RecalculateTotalPercentage();
         }
 
         public void GenererBergmodell()
@@ -672,6 +677,7 @@ namespace Fargemannen.ViewModel
             }
         }
 
+        
         public string Farge
         {
             get => _farge;
@@ -683,6 +689,8 @@ namespace Fargemannen.ViewModel
                     Brush = new SolidColorBrush(ConvertToColor(_farge));
                     OnPropertyChanged(nameof(Farge));
                     
+                    /*
+
                     if (!string.IsNullOrEmpty(Navn))
                     {
                         Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -707,8 +715,11 @@ namespace Fargemannen.ViewModel
 
                                 }
                             }
-                        }
-                    }
+                     
+                }
+
+                
+                    } */
                     
                 }
             }
