@@ -25,7 +25,9 @@ namespace Fargemannen.ViewModel
         private string _fullSosiFilePath;
         private string _fullsosidagenFilePath;
         private string _fullKofFilePath;
-       
+        private Dictionary<int, FolderData> _folderData;
+
+
         private string _reportFolderPath;
         private string _sampleResultsFolderPath;
         public Dictionary<string, string> ReportFiles { get; private set; }
@@ -33,8 +35,28 @@ namespace Fargemannen.ViewModel
 
         private string _errorMessage;
         public List<string> TotPaths;
-   
+        private ObservableCollection<SndFolderMapping> _sndFolderMappings;
 
+        public Dictionary<int, FolderData> FolderData
+        {
+            //Fikse sånn at gammel blir slettet 
+            get => _folderData;
+            private set
+            {
+                _folderData = value;
+                OnPropertyChanged(nameof(FolderData));
+            }
+        }
+
+        public ObservableCollection<SndFolderMapping> SndFolderMappings
+        {
+            get => _sndFolderMappings;
+            private set
+            {
+                _sndFolderMappings = value;
+                OnPropertyChanged(nameof(SndFolderMappings));
+            }
+        }
 
         public string SosiFilePath
         {
@@ -206,8 +228,8 @@ namespace Fargemannen.ViewModel
                 return instance;
             }
         }
-  
 
+        public ICommand UploadSndFolderCommand { get; private set; }
         public ICommand UploadSosiCommand { get; private set; }
         public ICommand UploadSosidagenCommand { get; private set; }
         public ICommand UploadKofCommand { get; private set; }
@@ -223,13 +245,46 @@ namespace Fargemannen.ViewModel
             UploadTotCommand = new RelayCommand(UploadTot);
             UploadReportFolderCommand = new RelayCommand(UploadReportFolder);
             UploadSampleResultsFolderCommand = new RelayCommand(UploadSampleResultsFolder);
+            UploadSndFolderCommand = new RelayCommand<SndFolderMapping>(UploadSndFolder);
 
             ReportFiles = new Dictionary<string, string>();
             SampleResultFiles = new Dictionary<string, string>();
             TotPaths = new List<string>();
             TotFilePaths = new ObservableCollection<KeyValuePair<string, string>>();  // Initialiserer samlingen
+            SndFolderMappings = new ObservableCollection<SndFolderMapping>
+            {
+                new SndFolderMapping() // Initial tom mapping for å starte
+            };
+            _folderData = new Dictionary<int, FolderData>();
 
         }
+        private void UploadSndFolder(SndFolderMapping mapping)
+        {
+            var folderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                mapping.Path = folderDialog.SelectedPath;
+
+                int folderNumber = _folderData.Count + 1;
+                var newFolderData = new FolderData
+                {
+                    Prefix = mapping.Prefix,
+                    FilePaths = new List<string> { mapping.Path }
+                };
+                _folderData[folderNumber] = newFolderData;
+
+                // Sett FolderData-referansen i SndFolderMapping
+                mapping.FolderData = newFolderData;
+
+                // Diagnostisk utskrift for å verifisere registrering av prefiksen
+                System.Diagnostics.Debug.WriteLine($"FolderNumber: {folderNumber}, Prefix: {mapping.Prefix}, Path: {mapping.Path}");
+
+                // Legg til en ny tom mapping for å muliggjøre flere opplastinger
+                SndFolderMappings.Add(new SndFolderMapping());
+            }
+        }
+
+
         private void UploadReportFolder()
         {
             var folderDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -358,6 +413,102 @@ namespace Fargemannen.ViewModel
         private void ClearError()
         {
             ErrorMessage = "";
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class SndFolderMapping : INotifyPropertyChanged
+    {
+        private string _prefix;
+        private string _path;
+        private FolderData _folderData;
+
+        public string Prefix
+        {
+            get => _prefix;
+            set
+            {
+                if (_prefix != value)
+                {
+                    _prefix = value;
+                    OnPropertyChanged(nameof(Prefix));
+                    // Oppdater FolderData når Prefix endres
+                    if (_folderData != null)
+                    {
+                        _folderData.Prefix = _prefix;
+                    }
+                }
+            }
+        }
+
+        public string Path
+        {
+            get => _path;
+            set
+            {
+                if (_path != value)
+                {
+                    _path = value;
+                    OnPropertyChanged(nameof(Path));
+                }
+            }
+        }
+
+        public FolderData FolderData
+        {
+            get => _folderData;
+            set
+            {
+                if (_folderData != value)
+                {
+                    _folderData = value;
+                    OnPropertyChanged(nameof(FolderData));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class FolderData : INotifyPropertyChanged
+    {
+        private string _prefix;
+        private List<string> _filePaths;
+
+        public string Prefix
+        {
+            get => _prefix;
+            set
+            {
+                _prefix = value;
+                OnPropertyChanged(nameof(Prefix));
+            }
+        }
+
+        public List<string> FilePaths
+        {
+            get => _filePaths;
+            set
+            {
+                _filePaths = value;
+                OnPropertyChanged(nameof(FilePaths));
+            }
+        }
+
+        public FolderData()
+        {
+            _filePaths = new List<string>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

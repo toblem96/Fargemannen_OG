@@ -297,6 +297,17 @@
     <EmbeddedResource Include="Resources\ramsondering.dwg" />
     <EmbeddedResource Include="Resources\stans.dwg" />
     <EmbeddedResource Include="Resources\vingeboring.dwg" />
+    <EmbeddedResource Include="Resources\CPT.dwg" />
+    <EmbeddedResource Include="Resources\STACK_dreiesondering.dwg" />
+    <EmbeddedResource Include="Resources\STACK_Dreietrykksondering.dwg" />
+    <EmbeddedResource Include="Resources\STACK_CPT.dwg" />
+    <EmbeddedResource Include="Resources\STACK_fjellkontrollboring.dwg" />
+    <EmbeddedResource Include="Resources\STACK_poretrykksmåler.dwg" />
+    <EmbeddedResource Include="Resources\STACK_prøvegrop.dwg" />
+    <EmbeddedResource Include="Resources\STACK_prøveserie.dwg" />
+    <EmbeddedResource Include="Resources\STACK_ramsondering.dwg" />
+    <EmbeddedResource Include="Resources\STACK_vingeboring.dwg" />
+    <EmbeddedResource Include="Resources\STACK_enkelSondering.dwg" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="GenRapport.xaml">

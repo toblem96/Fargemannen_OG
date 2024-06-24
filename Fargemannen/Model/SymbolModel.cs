@@ -62,6 +62,19 @@ namespace Fargemannen.Model
             }
         }
 
+        public static void ListResourceNames()
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string[] resourceNames = assembly.GetManifestResourceNames();
+            foreach (string resourceName in resourceNames)
+            {
+                ed.WriteMessage($"\n{resourceName}\n");
+            }
+        }
+
 
         public static void test(List<PunktInfo> pointsToSymbol, List<string> metoder, double minGrenseBerg, System.Windows.Media.Color selectedColor, System.Windows.Media.Color selectedColor_minBerg)
         {
@@ -76,9 +89,13 @@ namespace Fargemannen.Model
             var db = doc.Database;
             var ed = doc.Editor;
 
+            ListResourceNames();
+
+
             var dwgFiles = new Dictionary<string, string>
             {
                 ["totalsondering"] = "Fargemannen.Resources.Totalsondering.dwg",
+                ["cpt"] = "Fargemannen.Resources.CPT.dwg",
                 ["dreietrykksondering"] = "Fargemannen.Resources.Dreietrykksondering.dwg",
                 ["prøveserie"] = "Fargemannen.Resources.prøveserie.dwg",
                 ["poretrykkmåling"] = "Fargemannen.Resources.poretrykksmåler.dwg",
@@ -89,7 +106,18 @@ namespace Fargemannen.Model
                 ["ramsondering"] = "Fargemannen.Resources.ramsondering.dwg",
                 ["enkel"] = "Fargemannen.Resources.enkelSondering.dwg",
                 ["fjellidagen"] = "Fargemannen.Resources.fjellIDagen.dwg",
-                ["stans"] = "Fargemannen.Resources.stans.dwg"
+                ["stans"] = "Fargemannen.Resources.stans.dwg",
+                ["stack_dreiesondering"] = "Fargemannen.Resources.STACK_dreiesondering.dwg",
+                ["stack_dreietrykksondering"] = "Fargemannen.Resources.STACK_Dreietrykksondering.dwg",
+                ["stack_cpt"] = "Fargemannen.Resources.STACK_CPT.dwg",
+                ["stack_vingeboring"] = "Fargemannen.Resources.STACK_vingeboring.dwg",
+                ["stack_ramsondering"] = "Fargemannen.Resources.STACK_ramsondering.dwg",
+                ["stack_prøveserie"] = "Fargemannen.Resources.STACK_prøveserie.dwg",
+                ["stack_prøvegrop"] = "Fargemannen.Resources.STACK_prøvegrop.dwg",
+                ["stack_poretrykkmåling"] = "Fargemannen.Resources.STACK_poretrykksmåler.dwg",
+                ["stack_fjellkontrollboring"] = "Fargemannen.Resources.STACK_fjellkontrollboring.dwg",
+                ["stack_enkel"] = "Fargemannen.Resources.STACK_enkelSondering.dwg",
+                
             };
 
            
@@ -167,7 +195,7 @@ namespace Fargemannen.Model
 
             if (!blockRefs.ContainsKey(sonderingType))
             {
-                sonderingType = "Enkel";
+                sonderingType = "enkel";
             }
                 
 
@@ -191,7 +219,7 @@ namespace Fargemannen.Model
 
                 try
                 {
-                    InsertSymbolAndText(plasseringsPunkt, gjelendeKurve, stansSymbol, punkt, tr, db, layerSymbol, layerSymbolStansILos, minGrenseBerg, symbolID, borIBerg);
+                    InsertSymbolAndText(plasseringsPunkt, gjelendeKurve, stansSymbol, punkt, tr, db, layerSymbol, layerSymbolStansILos, minGrenseBerg, symbolID, borIBerg, blockRefs);
                 }
                 catch (Autodesk.AutoCAD.Runtime.Exception ex)
                 {
@@ -203,7 +231,7 @@ namespace Fargemannen.Model
 
 
 
-        private static void InsertSymbolAndText(Point3d placementPoint, ObjectId gjeldendeKurve, ObjectId stansSymbol, PunktInfo punkt, Transaction tr, Database db, string layerSymbol, string layerSymbolStansILos, double minGrenseBerg, string symbolID, double borIBerg)
+        private static void InsertSymbolAndText(Point3d placementPoint, ObjectId gjeldendeKurve, ObjectId stansSymbol, PunktInfo punkt, Transaction tr, Database db, string layerSymbol, string layerSymbolStansILos, double minGrenseBerg, string symbolID, double borIBerg, Dictionary<string, ObjectId> blockRefs)
         {
             try
             {
@@ -223,9 +251,8 @@ namespace Fargemannen.Model
                 {
                     throw new InvalidOperationException($"En blokk med navn '{btr.Name}' finnes allerede.");
                 }
-                placementPoint = new Point3d(placementPoint.X, placementPoint.Y, placementPoint.Z);
-               
 
+                // Insert the main symbol and text
                 BlockReference symbolRef = new BlockReference(placementPoint, gjeldendeKurve)
                 {
                     Layer = punkt.BoreFjell < minGrenseBerg ? layerSymbolStansILos : layerSymbol
@@ -247,14 +274,12 @@ namespace Fargemannen.Model
                     AlignmentPoint = new Point3d(placementPoint.X - 1.8, placementPoint.Y - 0.7, placementPoint.Z)
                 };
 
-                if (punkt.GBUMetode.ToLower() == "fjellidagen")
-                {
-                    btr.AppendEntity(symbolRef);
-                    btr.AppendEntity(textEntityGroundQuote);
-                    btr.AppendEntity(textEntitySymbolID);
-                    btr.Origin = placementPoint;
-                }
-                else
+                btr.AppendEntity(symbolRef);
+                btr.AppendEntity(textEntityGroundQuote);
+                btr.AppendEntity(textEntitySymbolID);
+                btr.Origin = placementPoint;
+
+                if (punkt.GBUMetode.ToLower() != "fjellidagen")
                 {
                     DBText textEntityLooseRockFirmRock = new DBText
                     {
@@ -263,11 +288,7 @@ namespace Fargemannen.Model
                         Height = 0.9
                     };
 
-                    btr.AppendEntity(symbolRef);
-                    btr.AppendEntity(textEntityGroundQuote);
                     btr.AppendEntity(textEntityLooseRockFirmRock);
-                    btr.AppendEntity(textEntitySymbolID);
-                    btr.Origin = placementPoint;
 
                     if (borIBerg < minGrenseBerg)
                     {
@@ -287,6 +308,30 @@ namespace Fargemannen.Model
                     }
                 }
 
+                // Handle stack bor symbols (only symbols, no text)
+                if (punkt.StackBor != null && punkt.StackBor.Any())
+                {
+                    for (int i = 0; i < punkt.StackBor.Count; i++)
+                    {
+                        Point3d stackPlacementPoint = new Point3d(placementPoint.X, placementPoint.Y + 3.2 * (i + 1), placementPoint.Z);
+
+                        // Determine the symbol type for stack bor
+                        string stackSonderingType = punkt.StackBor[i].ToLower();
+                        if (!blockRefs.ContainsKey(stackSonderingType))
+                        {
+                            stackSonderingType = "enkel";
+                        }
+                        ObjectId stackGjeldendeKurve = blockRefs[stackSonderingType];
+
+                        BlockReference stackSymbolRef = new BlockReference(stackPlacementPoint, stackGjeldendeKurve)
+                        {
+                            Layer = punkt.BoreFjell < minGrenseBerg ? layerSymbolStansILos : layerSymbol
+                        };
+
+                        btr.AppendEntity(stackSymbolRef);
+                    }
+                }
+
                 bt.Add(btr);
                 tr.AddNewlyCreatedDBObject(btr, true);
 
@@ -303,7 +348,6 @@ namespace Fargemannen.Model
                     Rotation = Model.SymbolHandlers.rotation,
                 };
 
-
                 modelSpace.AppendEntity(newBlockRef);
                 tr.AddNewlyCreatedDBObject(newBlockRef, true);
             }
@@ -311,7 +355,6 @@ namespace Fargemannen.Model
             {
                 System.Windows.Forms.MessageBox.Show($"En feil oppstod: {ex.Message}", "Feil", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
 

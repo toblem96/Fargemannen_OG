@@ -28,5 +28,7 @@ namespace Fargemannen
         public double Terrengkvote { get; set; }
         public double BoreFjell { get; set; }
         public double BorLøs { get; set; }
+        public List<string> StackBor { get; set; }
+  
     }
 }

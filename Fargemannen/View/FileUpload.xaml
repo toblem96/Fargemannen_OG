@@ -15,9 +15,14 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
+     
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" FontSize="20" FontFamily="Artifakt Element Heavy" Text="Last opp filer(NB, pass på at alle er i samme koordinatsystem)" Grid.ColumnSpan="2"/>
@@ -53,6 +58,29 @@
         <!-- Sample Results Folder Upload -->
         <Button Content="Last opp Prøveresultat mappe" Command="{Binding UploadSampleResultsFolderCommand}" Grid.Row="6" Grid.Column="0" Margin="5" Padding="5"/>
         <TextBox Text="{Binding DisplaySampleResultsFolderPath, UpdateSourceTrigger=PropertyChanged,  Mode=OneWay}" Grid.Row="6" Grid.Column="1" Margin="5" Padding="3"/>
-    
+
+        <!-- Dynamisk liste av SND mapper og prefikser -->
+        <ItemsControl Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding SndFolderMappings}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Last opp SND mappe" Command="{Binding DataContext.UploadSndFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Grid.Row="0" Grid.Column="0" Margin="5" Padding="5"/>
+                        <TextBox Text="{Binding Path, Mode=OneWay}" Grid.Row="0" Grid.Column="1" Margin="5" Padding="3"/>
+                        <TextBlock Text="Prefiks" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5"/>
+                        <TextBox Text="{Binding Prefix, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" Margin="5" Padding="3"/>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
     </Grid>
 </UserControl>

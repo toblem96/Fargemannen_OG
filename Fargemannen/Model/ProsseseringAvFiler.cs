@@ -11,6 +11,7 @@ using Autodesk.AutoCAD.EditorInput;
 using System.Windows.Controls;
 using Fargemannen.ViewModel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Globalization;
 
 
 
@@ -123,7 +124,7 @@ namespace Fargemannen.Model
                     var coords = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (coords.Length >= 2 && double.TryParse(coords[0], out y) && double.TryParse(coords[1], out x))
                     {
-                        x /= 100; // Konvertering hvis nødvendig
+                        x /= 100; 
                         y /= 100;
 
                         if (currentYear >= minAr && borremetoderSymbol.Contains(currentGBUMethod))
@@ -476,7 +477,7 @@ namespace Fargemannen.Model
                     ed.WriteMessage("\nBoremetode: " + metode);
                 }
 
-                ValidateInput(pointsToSymbol, punkterMesh, minAr, kofFilPath, sosiFilePath, sosiDagenFilePath);
+               // ValidateInput(pointsToSymbol, punkterMesh, minAr, kofFilPath, sosiFilePath, sosiDagenFilePath);
 
                 if (!string.IsNullOrWhiteSpace(sosiFilePath))
                 {
@@ -490,13 +491,15 @@ namespace Fargemannen.Model
                 {
                     ProcessTOTandKOFFiles(totFilesPaths, kofFilPath, pointsToSymbol, punkterMesh);
                 }
+                var folderData = fileViewModel.FolderData; // Sørg for at denne er riktig initialisert i ViewModel
+                HentBorepunktData(folderData, pointsToSymbol);
 
 
-               
 
-                
 
-                
+
+
+
 
 
             }
@@ -529,9 +532,251 @@ namespace Fargemannen.Model
                 return;
             }
         }
+        public static void HentBorepunktData(Dictionary<int, FolderData> folderData, List<PunktInfo> pointsToSymbol)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
 
+            foreach (var folder in folderData)
+            {
+                foreach (var filePath in folder.Value.FilePaths)
+                {
+                    if (Directory.Exists(filePath))
+                    {
+                        var files = Directory.GetFiles(filePath);
+                        foreach (var file in files)
+                        {
+                           // ed.WriteMessage(file);
+                            var punktObjekter = LesOgProsesserFil(file, folder.Value.Prefix);
+                            var punktObjekteMedMetode = GiReelGbuMetode(punktObjekter);
+                            var punktInfo = PrioritereSymbol(punktObjekteMedMetode);
+           
+                            if (punktInfo != null)
+                            {
+                                pointsToSymbol.Add(punktInfo);
+                                PrintPunktTilAutoCAD(punktInfo);
+                            }
+                        }
+                    }
+                    else if (File.Exists(filePath))
+                    {
+                        var punktObjekter = LesOgProsesserFil(filePath, folder.Value.Prefix);
+                        var punktObjekteMedMetode = GiReelGbuMetode(punktObjekter);
+                        var punktInfo = PrioritereSymbol(punktObjekteMedMetode);
+
+                        if (punktInfo != null)
+                        {
+                            pointsToSymbol.Add(punktInfo);
+                            PrintPunktTilAutoCAD(punktInfo);
+                        }
+                    }
+                }
+            }
+        }
+        private static void PrintPunktTilAutoCAD(PunktInfo punktInfo)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            ed.WriteMessage($"\nPunkt lagt til: PunktID = {punktInfo.PunktID}");
+            ed.WriteMessage($"\tPunkt = {punktInfo.Punkt}");
+            ed.WriteMessage($"\tGBUMetode = {punktInfo.GBUMetode}");
+            ed.WriteMessage($"\tTerrengkvote = {punktInfo.Terrengkvote}");
+            ed.WriteMessage($"\tBorLøs = {punktInfo.BorLøs}");
+            ed.WriteMessage($"\tBoreFjell = {punktInfo.BoreFjell}");
+            ed.WriteMessage($"\tStackBor = {string.Join(", ", punktInfo.StackBor)}");
+            ed.WriteMessage($"\tPrefiks = {punktInfo.RapportID}");
+        }
+
+        private static List<PunktInfo> LesOgProsesserFil(string filePath, string prefix)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            List<PunktInfo> punktObjekter = new List<PunktInfo>();
+            try
+            {
+                var lines = File.ReadAllLines(filePath);
+                if (lines.Length < 4) return null;
+
+                var punktID = Path.GetFileNameWithoutExtension(filePath).Split('_').Last();
+                punktID = punktID.Split(' ').First();
+                var y = double.Parse(lines[0]);
+                var x = double.Parse(lines[1]);
+                var z1 = double.Parse(lines[2]);
+               
+                var terrengkvote = z1;
+
+                var gbuMetode = "";
+                var borLøs = 0.0;
+                var boreFjell = 0.0;
+                var stackBor = new List<string>();
+                double identifiedValue = 0.0;
+                var starCounter = 0;
+                var funnet43 = false;
+                var totalBoreLengde = 0.0;
+
+                // Søk etter linjer som inneholder 43 i den femte kolonnen
+
+                for (int i = 0; i < lines.Length; i++)  
+                {
+                    var parts = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                   
+                    if (parts.Length >= 5 && parts[4] == "43")
+                    {
+                        borLøs = double.Parse(parts[0], CultureInfo.InvariantCulture);
+                        funnet43 = true;
+                        continue;
+                    }
+
+                    if (parts[0] == "*")
+                    {
+                        starCounter++;
+
+                        if (starCounter == 3)
+                        {
+                            gbuMetode = lines[i + 1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                        }
+                        if (starCounter >= 4)
+                        {
+                            totalBoreLengde = double.Parse(lines[i - 1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0]);
+                            if (!funnet43)
+                            {
+                                borLøs = totalBoreLengde;
+                            }
+                            else { boreFjell = totalBoreLengde - borLøs; }
+
+
+                            var punkt = new Point3d(x, y, terrengkvote-totalBoreLengde);
+                            PunktInfo punktInfo = new PunktInfo
+                            {
+                                PunktID = punktID,
+                                RapportID = prefix,
+                                MinPunktID = punktID,
+                                Punkt = punkt,
+                                GBUMetode = gbuMetode,
+                                Terrengkvote = terrengkvote,
+                                BorLøs = borLøs,
+                                BoreFjell = boreFjell,
+                                StackBor = stackBor
+                            };
+                            punktObjekter.Add(punktInfo);
+                            
+                            gbuMetode = "";
+                            borLøs = 0.0;
+                            boreFjell = 0.0;
+                            stackBor = new List<string>();
+                            funnet43 = false;
+                            //ed.WriteMessage("\n -------- objekt er laget!");
+
+                            if (i + 2 < lines.Length && lines[i + 2] != "*" && !string.IsNullOrEmpty(lines[i + 1]) && lines[i + 1].Length > 4)
+                            {
+                                gbuMetode = lines[i + 1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                            }
+
+                          
+                        }
+                    }
+                }
+                
+                return punktObjekter;
+
+            }
+            catch (Exception ex)
+            {
+                // Håndter eventuelle unntak
+                Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
+                return null;
+            }
+        }
+
+
+        private static PunktInfo PrioritereSymbol(List<PunktInfo> punktObjekter)
+        {
+            PunktInfo punktInfo = new PunktInfo();
+
+            if (punktObjekter.Count == 0)
+            {
+                return punktInfo;  // Return an empty object if the list is empty
+            }
+
+            if (punktObjekter.Count == 1)
+            {
+                return punktObjekter[0];  // Return the only object if the list has one element
+            }
+
+            // Define priority order for GBUMetode
+            List<string> priorityOrder = new List<string> { "totalsondering", "fjellkontrollboring", "dreietrykksondering" };
+
+            PunktInfo prioritizedPunkt = null;
+
+            foreach (var priority in priorityOrder)
+            {
+                prioritizedPunkt = punktObjekter.FirstOrDefault(p => p.GBUMetode == priority);
+                if (prioritizedPunkt != null)
+                {
+                    break;
+                }
+            }
+
+            if (prioritizedPunkt == null)
+            {
+                prioritizedPunkt = punktObjekter[0];  // Fallback to the first element if no prioritized method found
+            }
+
+            prioritizedPunkt.StackBor = new List<string>();
+
+            // Add GBUMetode of non-prioritized points to StackBor
+            foreach (var punkt in punktObjekter)
+            {
+                if (punkt != prioritizedPunkt)
+                {
+                    // Sjekk om GBUMetode inneholder minst tre bokstaver
+                    if (punkt.GBUMetode.Count(char.IsLetter) >= 3)
+                    {
+                        prioritizedPunkt.StackBor.Add("STACK_" + punkt.GBUMetode);
+                    }
+                }
+            }
+
+            return prioritizedPunkt;
+        }
+
+        private static List<PunktInfo> GiReelGbuMetode(List<PunktInfo> punktObjekter)
+        {
+            //Bør legge inn feilmelding om noen blir kventert til enkel ettersom det ikke finnerrring
+            foreach (var punktIfno in punktObjekter)
+            {
+                if (punktIfno.GBUMetode == "26")
+                {
+                    punktIfno.GBUMetode = "fjellkontrollboring";
+                }
+                else if (punktIfno.GBUMetode == "25")
+                {
+                    punktIfno.GBUMetode = "totalsondering";
+                }
+                else if (punktIfno.GBUMetode == "23")
+                {
+                    punktIfno.GBUMetode = "dreietrykksondering";
+                }
+                else if (punktIfno.GBUMetode == "21")
+                {
+                    punktIfno.GBUMetode = "dreiesondering";
+                }
+                else if (punktIfno.GBUMetode == "22")
+                {
+                    punktIfno.GBUMetode = "enkel";
+                }
+                else if (punktIfno.GBUMetode == "7")
+                {
+                    punktIfno.GBUMetode = "CPT";
+                }
+            }
+
+            return punktObjekter;
+        }
     }
-    }
+}
 
 
 
